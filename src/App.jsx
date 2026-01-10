@@ -17,21 +17,55 @@ function checkGuess(guessedWord, targetWord) {
   return guessedWord === targetWord;
 }
 
-function App() {
+function getNewTileTags(guessedWord, targetWord) {
+  const tileTags = Array.from({ length: WORD_LENGTH }, () => "");
+  const alphabetArray = Array(26).fill(0);
 
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    tileTags[i] = "gray";
+    alphabetArray[targetWord[i].charCodeAt(0) - "a".charCodeAt(0)]++;
+    if (guessedWord[i] === targetWord[i]) {
+      tileTags[i] = "green";
+      alphabetArray[targetWord[i].charCodeAt(0) - "a".charCodeAt(0)]--;
+    }
+  }
+  console.log(alphabetArray);
+  console.log(guessedWord, targetWord);
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    if (
+      guessedWord[i] !== targetWord[i] &&
+      alphabetArray[guessedWord[i].charCodeAt(0) - "a".charCodeAt(0)] > 0
+    ) {
+      tileTags[i] = "yellow";
+      alphabetArray[guessedWord[i].charCodeAt(0) - "a".charCodeAt(0)]--;
+    }
+  }
+  //   console.log(tileTags);
+  return tileTags;
+}
+
+function App() {
   const poolArray = useMemo(() => Array.from(poolOfTargetWords), []);
   const [targetWord] = useState(() => {
     const idx = Math.floor(Math.random() * poolArray.length);
-	console.log("Target word:", poolArray[idx]);
+    console.log("Target word:", poolArray[idx]);
     return poolArray[idx];
   });
 
   const [guesses, setGuesses] = useState(() =>
     Array.from({ length: TOTAL_LINES }, () => "")
   );
+
+  const [tileTags, setTileTags] = useState(() =>
+    Array.from({ length: TOTAL_LINES }, () =>
+      Array.from({ length: WORD_LENGTH }, () => "")
+    )
+  );
+
+  //   console.log(tileTags);
+
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState(false);
-
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -44,19 +78,35 @@ function App() {
       if (key === "enter") {
         if (guesses[currentGuessIndex].length === WORD_LENGTH) {
           const guessIsValid = handleGuess(guesses[currentGuessIndex]);
-		  if (guessIsValid) {
-			console.log("Guess is valid");
-			const isCorrect = checkGuess(guesses[currentGuessIndex], targetWord);
-			if (isCorrect) {
-				console.log("You won!");
-				setIsOver(true);
-			}
-			setCurrentGuessIndex((prev) => prev + 1);
-		  } else {
-			console.log("Guess is invalid");
-		  }
+          if (guessIsValid) {
+            console.log("Guess is valid");
+            const isCorrect = checkGuess(
+              guesses[currentGuessIndex],
+              targetWord
+            );
+
+            const newTileTags = getNewTileTags(
+              guesses[currentGuessIndex],
+              targetWord
+            );
+
+            setTileTags((prev) => {
+              const next = [...prev];
+              next[currentGuessIndex] = newTileTags;
+              return next;
+            });
+
+            if (isCorrect) {
+              console.log("You won!");
+              setIsOver(true);
+            }
+
+            setCurrentGuessIndex((prev) => prev + 1);
+          } else {
+            console.log("Guess is invalid");
+          }
         }
-		return;
+        return;
       }
 
       if (key === "backspace") {
@@ -83,19 +133,31 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [guesses, currentGuessIndex]);
 
-  if (currentGuessIndex >= TOTAL_LINES && !isOver) {
-    return <div>You lost!</div>;
-  }
+  let modalContent = null;
 
+  if (currentGuessIndex >= TOTAL_LINES && !isOver) {
+    modalContent = (
+      <div className="modal">
+        You lost! The word was <strong>{targetWord}</strong>
+        <button className="play-again-button" onClick={() => window.location.reload()}>Play again</button>
+      </div>
+    );
+  }
   if (isOver) {
-    return <div>You won!</div>;
+    modalContent = (
+      <div className="modal">
+        You won! The word was indeed <strong>{targetWord}</strong>
+        <button className="play-again-button" onClick={() => window.location.reload()}>Play again</button>
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="board-container">
       {guesses.map((guess, index) => (
-        <Line key={index} word={guess} />
+        <Line key={index} word={guess} tags={tileTags[index]} />
       ))}
+      {modalContent}
     </div>
   );
 }

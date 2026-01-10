@@ -1,5 +1,7 @@
-export default function Tile({ letter }) {
-	return <div className="tile" >
-		<p className="letter">{letter}</p>
-		</div>
+export default function Tile({ letter, tag }) {
+  return (
+    <div className={`tile ${tag}`}>
+      <p className="letter">{letter}</p>
+    </div>
+  );
 }
