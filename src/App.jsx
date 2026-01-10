@@ -29,8 +29,6 @@ function getNewTileTags(guessedWord, targetWord) {
       alphabetArray[targetWord[i].charCodeAt(0) - "a".charCodeAt(0)]--;
     }
   }
-  console.log(alphabetArray);
-  console.log(guessedWord, targetWord);
   for (let i = 0; i < WORD_LENGTH; i++) {
     if (
       guessedWord[i] !== targetWord[i] &&
@@ -40,7 +38,6 @@ function getNewTileTags(guessedWord, targetWord) {
       alphabetArray[guessedWord[i].charCodeAt(0) - "a".charCodeAt(0)]--;
     }
   }
-  //   console.log(tileTags);
   return tileTags;
 }
 
@@ -62,8 +59,6 @@ function App() {
     )
   );
 
-  //   console.log(tileTags);
-
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState(false);
 
@@ -79,7 +74,6 @@ function App() {
         if (guesses[currentGuessIndex].length === WORD_LENGTH) {
           const guessIsValid = handleGuess(guesses[currentGuessIndex]);
           if (guessIsValid) {
-            console.log("Guess is valid");
             const isCorrect = checkGuess(
               guesses[currentGuessIndex],
               targetWord
@@ -97,13 +91,10 @@ function App() {
             });
 
             if (isCorrect) {
-              console.log("You won!");
               setIsOver(true);
             }
 
             setCurrentGuessIndex((prev) => prev + 1);
-          } else {
-            console.log("Guess is invalid");
           }
         }
         return;
@@ -139,7 +130,12 @@ function App() {
     modalContent = (
       <div className="modal">
         You lost! The word was <strong>{targetWord}</strong>
-        <button className="play-again-button" onClick={() => window.location.reload()}>Play again</button>
+        <button
+          className="play-again-button"
+          onClick={() => window.location.reload()}
+        >
+          Play again
+        </button>
       </div>
     );
   }
@@ -147,7 +143,12 @@ function App() {
     modalContent = (
       <div className="modal">
         You won! The word was indeed <strong>{targetWord}</strong>
-        <button className="play-again-button" onClick={() => window.location.reload()}>Play again</button>
+        <button
+          className="play-again-button"
+          onClick={() => window.location.reload()}
+        >
+          Play again
+        </button>
       </div>
     );
   }
@@ -155,7 +156,12 @@ function App() {
   return (
     <div className="board-container">
       {guesses.map((guess, index) => (
-        <Line key={index} word={guess} tags={tileTags[index]} />
+        <Line
+          key={index}
+          word={guess}
+          tags={tileTags[index]}
+          isCurrentLine={currentGuessIndex - 1 === index}
+        />
       ))}
       {modalContent}
     </div>

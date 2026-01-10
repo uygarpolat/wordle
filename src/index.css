@@ -18,9 +18,12 @@ h1 {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	perspective: 800px;
 }
 
 .tile {
+	--tile-color: #ffffff;
+	--flip-delay: 0s;
 	width: 50px;
 	height: 50px;
 	border: 1px solid #000;
@@ -28,6 +31,9 @@ h1 {
 	align-items: center;
 	justify-content: center;
 	margin: 2px;
+	background-color: var(--tile-color);
+	transition: background-color 0.2s ease;
+	transform-style: preserve-3d;
 }
 
 .tile .letter {
@@ -40,18 +46,19 @@ h1 {
 	font-weight: bold;
 	text-align: center;
 	text-transform: uppercase;
+	transition: color 0.2s ease;
 }
 
 .tile.gray {
-	background-color: rgb(209, 184, 184);
+	--tile-color: rgb(209, 184, 184);
 }
 
 .tile.green {
-	background-color: green;
+	--tile-color: green;
 }
 
 .tile.yellow {
-	background-color: yellow;
+	--tile-color: yellow;
 }
 
 .modal {
@@ -81,4 +88,45 @@ h1 {
 
 .play-again-button:hover {
 	background-color: #333;
+}
+
+.animate {
+	animation: flipReveal 0.8s ease-in-out forwards;
+	animation-delay: var(--flip-delay);
+}
+
+.animate .letter {
+	opacity: 0;
+	animation: letterReveal 0.3s ease forwards;
+	animation-delay: calc(var(--flip-delay) + 0.4s);
+}
+
+@keyframes flipReveal {
+	0% {
+		transform: rotateX(0deg);
+		background-color: #ffffff;
+	}
+	49% {
+		transform: rotateX(90deg);
+		background-color: #ffffff;
+	}
+	50% {
+		transform: rotateX(90deg);
+		background-color: var(--tile-color);
+	}
+	100% {
+		transform: rotateX(0deg);
+		background-color: var(--tile-color);
+	}
+}
+
+@keyframes letterReveal {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
