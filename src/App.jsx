@@ -70,14 +70,15 @@ function App() {
         return;
       }
 
+      if (isOver) {
+        if (key === "enter") {
+          window.removeEventListener("keydown", handleKeyDown);
+          window.location.reload();
+        }
+		return;
+      }
+
       if (key === "enter") {
-
-		if (isOver) {
-			window.removeEventListener("keydown", handleKeyDown);
-			window.location.reload();
-			return
-		}
-
         if (guesses[currentGuessIndex].length === WORD_LENGTH) {
           const guessIsValid = handleGuess(guesses[currentGuessIndex]);
           if (guessIsValid) {
