@@ -23,7 +23,6 @@ h1 {
 
 .tile {
 	--tile-color: #ffffff;
-	--flip-delay: 0s;
 	width: 50px;
 	height: 50px;
 	border: 1px solid #000;
@@ -54,7 +53,7 @@ h1 {
 }
 
 .tile.green {
-	--tile-color: green;
+	--tile-color: rgb(70, 180, 70);
 }
 
 .tile.yellow {
@@ -91,14 +90,13 @@ h1 {
 }
 
 .animate {
-	animation: flipReveal 0.8s ease-in-out forwards;
-	animation-delay: var(--flip-delay);
+	animation: flipReveal 0.4s ease-in-out forwards;
 }
 
 .animate .letter {
-	opacity: 0;
-	animation: letterReveal 0.3s ease forwards;
-	animation-delay: calc(var(--flip-delay) + 0.4s);
+	opacity: 0 0.1s;
+	animation: letterReveal 0.4s ease forwards;
+	animation-delay: 0.2s;
 }
 
 @keyframes flipReveal {

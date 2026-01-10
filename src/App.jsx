@@ -129,7 +129,7 @@ function App() {
   if (currentGuessIndex >= TOTAL_LINES && !isOver) {
     modalContent = (
       <div className="modal">
-        You lost! The word was <strong>{targetWord}</strong>
+        you lost! the word was <strong>{targetWord}</strong>
         <button
           className="play-again-button"
           onClick={() => window.location.reload()}
@@ -142,7 +142,7 @@ function App() {
   if (isOver) {
     modalContent = (
       <div className="modal">
-        You won! The word was indeed <strong>{targetWord}</strong>
+        you won! the word was indeed <strong>{targetWord}</strong>
         <button
           className="play-again-button"
           onClick={() => window.location.reload()}

@@ -11,7 +11,6 @@ export default function Line({ word, tags, isCurrentLine }) {
           letter={word[index]}
           tag={tags[index]}
           animate={isCurrentLine}
-          index={index}
         />
       ))}
     </div>
