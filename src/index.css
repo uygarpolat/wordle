@@ -5,13 +5,18 @@ h1 {
 
 #root {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	width: 100%;
 }
 
 .board-container {
 	position: relative;
-	display: inline-block;
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	width: fit-content;
+	margin: 0 auto;
 }
 
 .line {
@@ -65,6 +70,9 @@ h1 {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	width: calc(100% - 50px); /* slightly narrower than the board */
+	max-width: 100%;
+	box-sizing: border-box;
 	padding: 20px;
 	border: 1px solid #000;
 	border-radius: 10px;
@@ -127,4 +135,32 @@ h1 {
 		opacity: 1;
 		transform: scale(1);
 	}
+}
+
+.keyboard {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.keyboard-row {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.button {
+	width: 32px;
+	height: 45px;
+	border: 1px solid #000;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 2px;
+	background-color: rgb(209, 184, 184);
+	color: #000;
+  	-webkit-appearance: none;
+  	appearance: none;
 }

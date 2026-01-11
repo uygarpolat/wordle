@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Line from "./Components/Line";
+import Keyboard from "./Components/Keyboard";
 import wordlistGuesses from "./Assets/Languages/en/wordlist_guesses_en.txt?raw";
 import wordlistAnswers from "./Assets/Languages/en/wordlist_answers_en.txt?raw";
 
@@ -62,9 +63,9 @@ function App() {
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState(false);
 
-  useEffect(() => {
-    function handleKeyDown(event) {
-      const key = event.key.toLowerCase();
+  const handleInput = useCallback(
+    (rawKey) => {
+      const key = rawKey.toLowerCase();
 
       if (!/^(?:[a-zçğıöşü]|backspace|enter)$/.test(key)) {
         return;
@@ -75,7 +76,7 @@ function App() {
           window.removeEventListener("keydown", handleKeyDown);
           window.location.reload();
         }
-		return;
+        return;
       }
 
       if (key === "enter") {
@@ -126,18 +127,25 @@ function App() {
         next[currentGuessIndex] += key;
         return next;
       });
+    },
+    [guesses, currentGuessIndex, isOver, targetWord]
+  );
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      handleInput(event.key);
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [guesses, currentGuessIndex]);
+  }, [handleInput]);
 
   let modalContent = null;
 
   if (currentGuessIndex >= TOTAL_LINES && !isOver) {
     modalContent = (
       <div className="modal">
-        you lost! the word was <strong>{targetWord}</strong>
+		<p>you lost! the word was <strong>{targetWord}</strong></p>
         <button
           className="play-again-button"
           onClick={() => window.location.reload()}
@@ -150,7 +158,7 @@ function App() {
   if (isOver) {
     modalContent = (
       <div className="modal">
-        you won! the word was indeed <strong>{targetWord}</strong>
+        <p>you won! the word was indeed <strong>{targetWord}</strong></p>
         <button
           className="play-again-button"
           onClick={() => window.location.reload()}
@@ -162,17 +170,22 @@ function App() {
   }
 
   return (
-    <div className="board-container">
-      {guesses.map((guess, index) => (
-        <Line
-          key={index}
-          word={guess}
-          tags={tileTags[index]}
-          isCurrentLine={currentGuessIndex - 1 === index}
-        />
-      ))}
-      {modalContent}
-    </div>
+    <>
+      <div className="board-container">
+        {guesses.map((guess, index) => (
+          <Line
+            key={index}
+            word={guess}
+            tags={tileTags[index]}
+            isCurrentLine={currentGuessIndex - 1 === index}
+          />
+        ))}
+        {modalContent}
+      </div>
+      <div className="keyboard-container">
+        <Keyboard onKeyPress={handleInput} />
+      </div>
+    </>
   );
 }
 
