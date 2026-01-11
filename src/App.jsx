@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Line from "./Components/Line";
-import wordlistGuesses from "./Assets/wordlist_guesses.txt?raw";
-import wordlistAnswers from "./Assets/wordlist_answers.txt?raw";
+import wordlistGuesses from "./Assets/Languages/en/wordlist_guesses_en.txt?raw";
+import wordlistAnswers from "./Assets/Languages/en/wordlist_answers_en.txt?raw";
 
 const validGuessWords = new Set(wordlistGuesses.split("\n"));
 const poolOfTargetWords = new Set(wordlistAnswers.split("\n"));
@@ -66,7 +66,7 @@ function App() {
     function handleKeyDown(event) {
       const key = event.key.toLowerCase();
 
-      if (!/^(?:[a-z]|backspace|enter)$/.test(key)) {
+      if (!/^(?:[a-zçğıöşü]|backspace|enter)$/.test(key)) {
         return;
       }
 
