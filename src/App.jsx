@@ -1,8 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useContext,
+  useRef,
+} from "react";
 import Line from "./Components/Line";
 import Keyboard from "./Components/Keyboard";
+import { KeyboardContext } from "./Store/keyboard-context";
 import wordlistGuesses from "./Assets/Languages/en/wordlist_guesses_en.txt?raw";
 import wordlistAnswers from "./Assets/Languages/en/wordlist_answers_en.txt?raw";
+// import wordlistGuesses from "./Assets/Languages/tr/wordlist_guesses_tr.txt?raw";
+// import wordlistAnswers from "./Assets/Languages/tr/wordlist_guesses_tr.txt?raw";
 
 const validGuessWords = new Set(wordlistGuesses.split("\n"));
 const poolOfTargetWords = new Set(wordlistAnswers.split("\n"));
@@ -63,6 +73,8 @@ function App() {
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState(false);
 
+  const { keyboardColors, updateKeyboardColors } = useContext(KeyboardContext);
+
   const handleInput = useCallback(
     (rawKey) => {
       const key = rawKey.toLowerCase();
@@ -92,6 +104,8 @@ function App() {
               guesses[currentGuessIndex],
               targetWord
             );
+
+			updateKeyboardColors(guesses[currentGuessIndex], newTileTags);
 
             setTileTags((prev) => {
               const next = [...prev];
@@ -130,6 +144,17 @@ function App() {
     },
     [guesses, currentGuessIndex, isOver, targetWord]
   );
+
+  // Keep a stable callback identity for the virtual keyboard, while always using
+  // the latest handleInput logic stored in a ref.
+  const handleInputRef = useRef(handleInput);
+  useEffect(() => {
+    handleInputRef.current = handleInput;
+  }, [handleInput]);
+
+  const handleKeyboardInput = useCallback((key) => {
+    handleInputRef.current(key);
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -183,7 +208,7 @@ function App() {
         {modalContent}
       </div>
       <div className="keyboard-container">
-        <Keyboard onKeyPress={handleInput} />
+        <Keyboard onKeyPress={handleKeyboardInput} />
       </div>
     </>
   );

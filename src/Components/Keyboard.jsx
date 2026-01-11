@@ -1,3 +1,4 @@
+import { memo } from "react";
 import Button from "./Button.jsx";
 
 const KEYBOARD_ROWS_ENGLISH_QWERTY_CAPS = [
@@ -6,16 +7,25 @@ const KEYBOARD_ROWS_ENGLISH_QWERTY_CAPS = [
   ["⏎", "Z", "X", "C", "V", "B", "N", "M", "⌫"],
 ];
 
-export default function Keyboard({ onKeyPress }) {
+const KEYBOARD_ROWS_TURKISH_QWERTY_CAPS = [
+  ["E", "R", "T", "Y", "U", "I", "O", "P", "Ğ", "Ü"],
+  ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ş", "İ"],
+  ["⏎", "Z", "C", "V", "B", "N", "M", "Ö", "Ç", "⌫"],
+];
+
+function Keyboard({ onKeyPress }) {
   const normalizeKey = (label) => {
     if (label === "⏎") return "enter";
     if (label === "⌫") return "backspace";
     return label.toLowerCase();
   };
 
+  const current_keyboard = KEYBOARD_ROWS_ENGLISH_QWERTY_CAPS;
+  // const current_keyboard = KEYBOARD_ROWS_TURKISH_QWERTY_CAPS;
+
   return (
     <div className="keyboard">
-      {KEYBOARD_ROWS_ENGLISH_QWERTY_CAPS.map((row, rowIndex) => (
+      {current_keyboard.map((row, rowIndex) => (
         <div className="keyboard-row" key={rowIndex}>
           {row.map((ltr, keyIndex) => (
             <Button
@@ -37,3 +47,5 @@ export default function Keyboard({ onKeyPress }) {
     </div>
   );
 }
+
+export default memo(Keyboard);
