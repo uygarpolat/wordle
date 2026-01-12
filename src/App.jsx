@@ -80,7 +80,8 @@ function App() {
         won: 0,
         played: 0,
 		streak: 0,
-		longestStreak: 0
+		longestStreak: 0,
+		guessLocation: Array(TOTAL_LINES + 1).fill(0)
       },
     ];
     const payload = {
@@ -88,12 +89,13 @@ function App() {
       word: targetWord,
       result: result,
       guesses: guesses,
-      currentGuessIndex: currentGuessIndex,
+      lastGuessIndex: currentGuessIndex + 1,
     };
     history[0].won += result === "won" ? 1 : 0;
     history[0].played++;
     history[0].streak = result === "won" ? history[0].streak + 1 : 0;
 	history[0].longestStreak = Math.max(history[0].longestStreak, history[0].streak);
+	history[0].guessLocation[(currentGuessIndex + 1 + (result === "won" ? 0 : 1)) % (TOTAL_LINES + 1)] += 1;
     localStorage.setItem(
       "history",
       JSON.stringify([...history, payload])
@@ -140,18 +142,25 @@ function App() {
               return next;
             });
 
+			setCurrentGuessIndex(prev => prev + 1);
+			
             if (isCorrect) {
               handleIsOver("won");
               return;
             }
 
-            setCurrentGuessIndex((prev) => {
-              const next = prev + 1;
-              if (next >= TOTAL_LINES) {
-                handleIsOver("lost");
-              }
-              return next;
-            });
+			if (currentGuessIndex + 1 >= TOTAL_LINES) {
+				handleIsOver("lost");
+				return;
+			}
+
+            // setCurrentGuessIndex((prev) => {
+            //   const next = prev + 1;
+            //   if (next >= TOTAL_LINES) {
+            //     handleIsOver("lost");
+            //   }
+            //   return next;
+            // });
           }
         }
         return;
@@ -179,8 +188,6 @@ function App() {
     [guesses, currentGuessIndex, isOver, targetWord]
   );
 
-  // Keep a stable callback identity for the virtual keyboard, while always using
-  // the latest handleInput logic stored in a ref.
   const handleInputRef = useRef(handleInput);
   useEffect(() => {
     handleInputRef.current = handleInput;

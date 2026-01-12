@@ -1,206 +1,208 @@
 h1 {
-	text-align: center;
-	color: blue
+  text-align: center;
+  color: blue;
 }
 
 #root {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
 }
 
 .board-container {
-	position: relative;
-	display: inline-flex;
-	flex-direction: column;
-	align-items: center;
-	width: fit-content;
-	margin: 0 auto;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .line {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	perspective: 800px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 800px;
 }
 
 .tile {
-	--tile-color: #ffffff;
-	width: 50px;
-	height: 50px;
-	border: 1px solid #000;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	margin: 2px;
-	background-color: var(--tile-color);
-	transition: background-color 0.2s ease;
-	transform-style: preserve-3d;
+  --tile-color: #ffffff;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  background-color: var(--tile-color);
+  transition: background-color 0.2s ease;
+  transform-style: preserve-3d;
 }
 
 .tile .letter {
-	margin: 0;
+  margin: 0;
 }
 
 .letter {
-	padding: 0;
-	font-size: 24px;
-	font-weight: bold;
-	text-align: center;
-	text-transform: uppercase;
-	transition: color 0.2s ease;
+  padding: 0;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
 }
 
 .tile.gray {
-	--tile-color: rgb(209, 184, 184);
+  --tile-color: rgb(209, 184, 184);
 }
 
 .tile.green {
-	--tile-color: rgb(70, 180, 70);
+  --tile-color: rgb(70, 180, 70);
 }
 
 .tile.yellow {
-	--tile-color: yellow;
+  --tile-color: yellow;
 }
 
 .modal {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: calc(100% - 50px); /* slightly narrower than the board */
-	max-width: 100%;
-	box-sizing: border-box;
-	padding: 20px;
-	border: 1px solid #000;
-	border-radius: 10px;
-	background-color: rgba(255, 165, 0, 0.95);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-	z-index: 10;
-	text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 50px);
+  /* slightly narrower than the board */
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  border: 1px solid #000;
+  border-radius: 10px;
+  background-color: rgba(255, 165, 0, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  text-align: center;
 }
 
 .play-again-button {
-	background-color: blue;
-	color: #fff;
-	border: none;
-	border-radius: 5px;
-	padding: 10px 20px;
-	margin-top: 10px;
-	cursor: pointer;
-	text-transform: uppercase;
+  background-color: blue;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  text-transform: uppercase;
 }
 
 .play-again-button:hover {
-	background-color: #333;
+  background-color: #333;
 }
 
 .tile.animate {
-	animation: flipReveal 0.4s ease-in-out forwards;
+  animation: flipReveal 0.4s ease-in-out forwards;
 }
 
-/* .animate .letter {
-	opacity: 0 0.1s;
-	animation: letterReveal 0.4s ease forwards;
-	animation-delay: 0.2s;
-} */
-
 @keyframes flipReveal {
-	0% {
-		transform: rotateX(0deg);
-		background-color: #ffffff;
-	}
-	49% {
-		transform: rotateX(90deg);
-		background-color: #ffffff;
-	}
-	50% {
-		transform: rotateX(90deg);
-		background-color: var(--tile-color);
-	}
-	100% {
-		transform: rotateX(0deg);
-		background-color: var(--tile-color);
-	}
+  0% {
+    transform: rotateX(0deg);
+    background-color: #ffffff;
+  }
+
+  49% {
+    transform: rotateX(90deg);
+    background-color: #ffffff;
+  }
+
+  50% {
+    transform: rotateX(90deg);
+    background-color: var(--tile-color);
+  }
+
+  100% {
+    transform: rotateX(0deg);
+    background-color: var(--tile-color);
+  }
 }
 
 @keyframes letterReveal {
-	from {
-		opacity: 0;
-		transform: scale(0.9);
-	}
-	to {
-		opacity: 1;
-		transform: scale(1);
-	}
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .button.animate {
-	animation: keyFlipReveal 0.4s ease-in-out forwards;
+  animation: keyFlipReveal 0.4s ease-in-out forwards;
 }
 
 @keyframes keyFlipReveal {
-	0% {
-		transform: rotateX(0deg);
-		background-color: var(--prev-color, rgb(209, 184, 184));
-	}
-	49% {
-		transform: rotateX(90deg);
-		background-color: var(--prev-color, rgb(209, 184, 184));
-	}
-	50% {
-		transform: rotateX(90deg);
-		background-color: var(--next-color, var(--tile-color));
-	}
-	100% {
-		transform: rotateX(0deg);
-		background-color: var(--next-color, var(--tile-color));
-	}
+  0% {
+    transform: rotateX(0deg);
+    background-color: var(--prev-color, rgb(209, 184, 184));
+  }
+
+  49% {
+    transform: rotateX(90deg);
+    background-color: var(--prev-color, rgb(209, 184, 184));
+  }
+
+  50% {
+    transform: rotateX(90deg);
+    background-color: var(--next-color, var(--tile-color));
+  }
+
+  100% {
+    transform: rotateX(0deg);
+    background-color: var(--next-color, var(--tile-color));
+  }
 }
 
 .keyboard {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .keyboard-row {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 .button {
-	--tile-color: rgb(209, 184, 184);
-	width: 32px;
-	height: 45px;
-	border: 1px solid #000;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	margin: 2px;
-	background-color: var(--tile-color);
-	color: #000;
-  	-webkit-appearance: none;
-  	appearance: none;
+  --tile-color: rgb(209, 184, 184);
+  width: 32px;
+  height: 45px;
+  border: 1px solid #000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  background-color: var(--tile-color);
+  color: #000;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .button.button-green {
-	--tile-color: rgb(70, 180, 70);
+  --tile-color: rgb(70, 180, 70);
 }
 
 .button.button-yellow {
-	--tile-color: yellow;
+  --tile-color: yellow;
 }
 
 .button.button-gray {
-	--tile-color: rgb(209, 184, 184);
+  --tile-color: rgb(209, 184, 184);
 }
 
 .button.button-dark-gray {
-	--tile-color: rgb(100, 100, 100);
+  --tile-color: rgb(100, 100, 100);
 }
