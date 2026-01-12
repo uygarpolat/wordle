@@ -22,6 +22,8 @@ export const KeyboardContextProvider = ({ children }) => {
           next[word[i].charCodeAt(0) - "a".charCodeAt(0)] !== "green"
         ) {
           next[word[i].charCodeAt(0) - "a".charCodeAt(0)] = "yellow";
+        } else if (colorTags[i] === "gray") {
+          next[word[i].charCodeAt(0) - "a".charCodeAt(0)] = "dark-gray";
         }
       }
       return next;

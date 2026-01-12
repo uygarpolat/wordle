@@ -200,3 +200,7 @@ h1 {
 .button.button-gray {
 	--tile-color: rgb(209, 184, 184);
 }
+
+.button.button-dark-gray {
+	--tile-color: rgb(100, 100, 100);
+}
