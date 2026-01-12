@@ -71,7 +71,34 @@ function App() {
   );
 
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
-  const [isOver, setIsOver] = useState(false);
+  const [isOver, setIsOver] = useState("ongoing");
+
+  function handleIsOver(result) {
+    setIsOver(result);
+    const history = JSON.parse(localStorage.getItem("history")) || [
+      {
+        won: 0,
+        played: 0,
+		streak: 0,
+		longestStreak: 0
+      },
+    ];
+    const payload = {
+      date: new Date().toISOString(),
+      word: targetWord,
+      result: result,
+      guesses: guesses,
+      currentGuessIndex: currentGuessIndex,
+    };
+    history[0].won += result === "won" ? 1 : 0;
+    history[0].played++;
+    history[0].streak = result === "won" ? history[0].streak + 1 : 0;
+	history[0].longestStreak = Math.max(history[0].longestStreak, history[0].streak);
+    localStorage.setItem(
+      "history",
+      JSON.stringify([...history, payload])
+    );
+  }
 
   const { keyboardColors, updateKeyboardColors } = useContext(KeyboardContext);
 
@@ -83,7 +110,7 @@ function App() {
         return;
       }
 
-      if (isOver) {
+      if (isOver !== "ongoing") {
         if (key === "enter") {
           window.removeEventListener("keydown", handleKeyDown);
           window.location.reload();
@@ -105,7 +132,7 @@ function App() {
               targetWord
             );
 
-			updateKeyboardColors(guesses[currentGuessIndex], newTileTags);
+            updateKeyboardColors(guesses[currentGuessIndex], newTileTags);
 
             setTileTags((prev) => {
               const next = [...prev];
@@ -114,10 +141,17 @@ function App() {
             });
 
             if (isCorrect) {
-              setIsOver(true);
+              handleIsOver("won");
+              return;
             }
 
-            setCurrentGuessIndex((prev) => prev + 1);
+            setCurrentGuessIndex((prev) => {
+              const next = prev + 1;
+              if (next >= TOTAL_LINES) {
+                handleIsOver("lost");
+              }
+              return next;
+            });
           }
         }
         return;
@@ -167,23 +201,18 @@ function App() {
 
   let modalContent = null;
 
-  if (currentGuessIndex >= TOTAL_LINES && !isOver) {
+  if (isOver !== "ongoing") {
+    const history = JSON.parse(localStorage.getItem("history"));
+
     modalContent = (
       <div className="modal">
-		<p>you lost! the word was <strong>{targetWord}</strong></p>
-        <button
-          className="play-again-button"
-          onClick={() => window.location.reload()}
-        >
-          Play again
-        </button>
-      </div>
-    );
-  }
-  if (isOver) {
-    modalContent = (
-      <div className="modal">
-        <p>you won! the word was indeed <strong>{targetWord}</strong></p>
+        <p>
+          you {isOver}! the word was {isOver === "won" ? "indeed " : ""}
+          <strong>{targetWord}</strong>
+        </p>
+        <p>
+          your score so far: {history[0].won} / {history[0].played} streak: {history[0].streak} longest streak: {history[0].longestStreak}
+        </p>
         <button
           className="play-again-button"
           onClick={() => window.location.reload()}

@@ -21,7 +21,7 @@ function Keyboard({ onKeyPress }) {
   };
 
   const current_keyboard = KEYBOARD_ROWS_ENGLISH_QWERTY_CAPS;
-  // const current_keyboard = KEYBOARD_ROWS_TURKISH_QWERTY_CAPS;
+//   const current_keyboard = KEYBOARD_ROWS_TURKISH_QWERTY_CAPS;
 
   return (
     <div className="keyboard">
