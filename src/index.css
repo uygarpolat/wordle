@@ -3,11 +3,22 @@ h1 {
   color: blue;
 }
 
-#root {
+#app-header {
+  display: flex;
+  justify-content:center;
+  align-items:center;
+}
+
+#main {
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
+}
+
+#progress-bar {
+  width: 100%;
+  height: 30px;
 }
 
 .board-container {
