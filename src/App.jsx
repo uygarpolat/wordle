@@ -80,7 +80,7 @@ function generateGuessWord(keyboardColors, poolArray) {
 
 function App() {
   const poolArray = useMemo(() => Array.from(poolOfTargetWords), []);
-  const [targetWord] = useState(() => {
+  const [targetWord, setTargetWord] = useState(() => {
     const idx = Math.floor(Math.random() * poolArray.length);
     console.log("Target word:", poolArray[idx]);
     return poolArray[idx];
@@ -99,7 +99,7 @@ function App() {
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState("ongoing");
 
-  function handleIsOver(result) {
+  function handleGameOver(result) {
     setIsOver(result);
     const history = JSON.parse(localStorage.getItem("history")) || [
       {
@@ -130,7 +130,8 @@ function App() {
     localStorage.setItem("history", JSON.stringify([...history, payload]));
   }
 
-  const { keyboardColors, updateKeyboardColors } = useContext(KeyboardContext);
+  const { keyboardColors, updateKeyboardColors, resetKeyboardColors } =
+    useContext(KeyboardContext);
 
   const submitGuess = useCallback(
     (guessedWord) => {
@@ -152,12 +153,12 @@ function App() {
           setCurrentGuessIndex((prev) => prev + 1);
 
           if (isCorrect) {
-            handleIsOver("won");
+            handleGameOver("won");
             return;
           }
 
           if (currentGuessIndex + 1 >= TOTAL_LINES) {
-            handleIsOver("lost");
+            handleGameOver("lost");
             return;
           }
         }
@@ -238,6 +239,22 @@ function App() {
     submitGuess(generatedGuessWord);
   }, [currentGuessIndex, keyboardColors, poolArray, submitGuess]);
 
+  function handleGameOverReset() {
+    setGuesses(Array.from({ length: TOTAL_LINES }, () => ""));
+    setTileTags(
+      Array.from({ length: TOTAL_LINES }, () =>
+        Array.from({ length: WORD_LENGTH }, () => "")
+      )
+    );
+    setCurrentGuessIndex(0);
+    setIsOver("ongoing");
+    resetKeyboardColors();
+
+    const idx = Math.floor(Math.random() * poolArray.length);
+    console.log("Target word:", poolArray[idx]);
+    setTargetWord(poolArray[idx]);
+  }
+
   return (
     <>
       <header id="app-header">
@@ -262,7 +279,11 @@ function App() {
               isCurrentLine={currentGuessIndex - 1 === index}
             />
           ))}
-          <Modal isOver={isOver} targetWord={targetWord} />
+          <Modal
+            isOver={isOver}
+            targetWord={targetWord}
+            onPlayAgain={handleGameOverReset}
+          />
         </div>
         <div className="keyboard-container">
           <Keyboard onKeyPress={handleKeyboardInput} />
