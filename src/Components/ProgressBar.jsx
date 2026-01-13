@@ -1,61 +1,24 @@
-import {
-  useState,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useCallback,
-  forwardRef,
-} from "react";
+import { useEffect, useState } from "react";
 
-const ProgressBar = forwardRef(function ProgressBar({ timer, onTimeout }, ref) {
-  const [remainingTime, setRemainingTime] = useState(timer);
-  const increment = 20;
+export default function ProgressBar({ isOver, duration, onTimeout }) {
+	const [remainingTime, setRemainingTime] = useState(duration);
+	console.log("isOver inside of ProgressBar: ", isOver);
 
-  const timerRef = useRef(null);
-  const intervalRef = useRef(null);
+	useEffect(() => {
+		if (isOver !== "ongoing") return;
 
-  const startInterval = useCallback(() => {
-    clearInterval(intervalRef.current);
+		const timer = setTimeout(onTimeout, duration);
+		return () => clearTimeout(timer);
+	}, [duration, onTimeout, isOver]);
 
-    intervalRef.current = setInterval(() => {
-      setRemainingTime((prevTime) => Math.max(prevTime - increment, 0));
-    }, increment);
-  }, []);
+	useEffect(() => {
+		if (isOver !== "ongoing") return;
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      reset() {
-        setRemainingTime(timer);
-        startInterval();
-      },
-    }),
-    [startInterval, timer]
-  );
+		const interval = setInterval(() => {
+			setRemainingTime((prev) => Math.max(0, prev - 10));
+		}, 10);
+		return () => clearInterval(interval);
+	}, [isOver]);
 
-  useEffect(() => {
-    startInterval();
-
-    return () => {
-      clearInterval(intervalRef.current);
-    };
-  }, [startInterval]);
-
-  useEffect(() => {
-    if (remainingTime === 0) {
-      clearInterval(intervalRef.current);
-      onTimeout?.();
-    }
-  }, [remainingTime, onTimeout]);
-
-  return (
-    <progress
-      ref={timerRef}
-      id="progress-bar"
-      value={remainingTime}
-      max={timer}
-    />
-  );
-});
-
-export default ProgressBar;
+	return <progress id="progress-bar" value={isOver === "ongoing" ? remainingTime : "0"} max={duration} />;
+}

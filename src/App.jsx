@@ -10,6 +10,7 @@ import Line from "./Components/Line";
 import Keyboard from "./Components/Keyboard";
 import { KeyboardContext } from "./Store/keyboard-context";
 import ProgressBar from "./Components/ProgressBar";
+import Modal from "./Components/Modal";
 import wordlistGuesses from "./Assets/Languages/en/wordlist_guesses_en.txt?raw";
 import wordlistAnswers from "./Assets/Languages/en/wordlist_answers_en.txt?raw";
 // import wordlistGuesses from "./Assets/Languages/tr/wordlist_guesses_tr.txt?raw";
@@ -95,8 +96,6 @@ function App() {
     )
   );
 
-  const progressRef = useRef(null);
-
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState("ongoing");
 
@@ -133,15 +132,39 @@ function App() {
 
   const { keyboardColors, updateKeyboardColors } = useContext(KeyboardContext);
 
-  const handleProgressBarTimeout = useCallback(() => {
-    const generatedGuessWord = generateGuessWord(keyboardColors, poolArray);
-    setGuesses((prev) => {
-      const next = [...prev];
-      next[currentGuessIndex] = generatedGuessWord;
-      return next;
-    });
-    handleInputRef.current?.("enter");
-  }, [currentGuessIndex, keyboardColors, poolArray]);
+  const submitGuess = useCallback(
+    (guessedWord) => {
+      if (guessedWord.length === WORD_LENGTH) {
+        const guessIsValid = handleGuess(guessedWord);
+        if (guessIsValid) {
+          const isCorrect = checkGuess(guessedWord, targetWord);
+
+          const newTileTags = getNewTileTags(guessedWord, targetWord);
+
+          updateKeyboardColors(guessedWord, newTileTags);
+
+          setTileTags((prev) => {
+            const next = [...prev];
+            next[currentGuessIndex] = newTileTags;
+            return next;
+          });
+
+          setCurrentGuessIndex((prev) => prev + 1);
+
+          if (isCorrect) {
+            handleIsOver("won");
+            return;
+          }
+
+          if (currentGuessIndex + 1 >= TOTAL_LINES) {
+            handleIsOver("lost");
+            return;
+          }
+        }
+      }
+    },
+    [currentGuessIndex, targetWord, updateKeyboardColors]
+  );
 
   const handleInput = useCallback(
     (rawKey) => {
@@ -160,46 +183,7 @@ function App() {
       }
 
       if (key === "enter") {
-        if (guesses[currentGuessIndex].length === WORD_LENGTH) {
-          const guessIsValid = handleGuess(guesses[currentGuessIndex]);
-          if (guessIsValid) {
-            progressRef.current?.reset();
-            const isCorrect = checkGuess(
-              guesses[currentGuessIndex],
-              targetWord
-            );
-
-            const newTileTags = getNewTileTags(
-              guesses[currentGuessIndex],
-              targetWord
-            );
-
-            updateKeyboardColors(guesses[currentGuessIndex], newTileTags);
-
-            setTileTags((prev) => {
-              const next = [...prev];
-              next[currentGuessIndex] = newTileTags;
-              return next;
-            });
-
-            setCurrentGuessIndex((prev) => prev + 1);
-
-            if (isCorrect) {
-              handleIsOver("won");
-              return;
-            }
-
-            if (currentGuessIndex + 1 >= TOTAL_LINES) {
-              handleIsOver("lost");
-              return;
-            }
-          } else {
-            const generatedGuessWord = generateGuessWord(
-              keyboardColors,
-              poolArray
-            );
-          }
-        }
+        submitGuess(guesses[currentGuessIndex]);
         return;
       }
 
@@ -222,10 +206,11 @@ function App() {
         return next;
       });
     },
-    [guesses, currentGuessIndex, isOver, targetWord]
+    [guesses, currentGuessIndex, isOver, targetWord, submitGuess]
   );
 
   const handleInputRef = useRef(handleInput);
+
   useEffect(() => {
     handleInputRef.current = handleInput;
   }, [handleInput]);
@@ -243,30 +228,15 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleInput]);
 
-  let modalContent = null;
-
-  if (isOver !== "ongoing") {
-    const history = JSON.parse(localStorage.getItem("history"));
-
-    modalContent = (
-      <div className="modal">
-        <p>
-          you {isOver}! the word was {isOver === "won" ? "indeed " : ""}
-          <strong>{targetWord}</strong>
-        </p>
-        <p>
-          your score so far: {history[0].won} / {history[0].played} streak:{" "}
-          {history[0].streak} longest streak: {history[0].longestStreak}
-        </p>
-        <button
-          className="play-again-button"
-          onClick={() => window.location.reload()}
-        >
-          Play again
-        </button>
-      </div>
-    );
-  }
+  const handleProgressBarTimeout = useCallback(() => {
+    const generatedGuessWord = generateGuessWord(keyboardColors, poolArray);
+    setGuesses((prev) => {
+      const next = [...prev];
+      next[currentGuessIndex] = generatedGuessWord;
+      return next;
+    });
+    submitGuess(generatedGuessWord);
+  }, [currentGuessIndex, keyboardColors, poolArray, submitGuess]);
 
   return (
     <>
@@ -276,11 +246,14 @@ function App() {
       </header>
       <div id="main">
         <div className="board-container">
-          {/* <ProgressBar
-            ref={progressRef}
-            timer={3000}
-            onTimeout={handleProgressBarTimeout}
-          /> */}
+          {false && (
+            <ProgressBar
+              key={currentGuessIndex}
+              isOver={isOver}
+              duration={30000}
+              onTimeout={handleProgressBarTimeout}
+            />
+          )}
           {guesses.map((guess, index) => (
             <Line
               key={index}
@@ -289,7 +262,7 @@ function App() {
               isCurrentLine={currentGuessIndex - 1 === index}
             />
           ))}
-          {modalContent}
+          <Modal isOver={isOver} targetWord={targetWord} />
         </div>
         <div className="keyboard-container">
           <Keyboard onKeyPress={handleKeyboardInput} />
