@@ -11,18 +11,10 @@ import Keyboard from "./Components/Keyboard";
 import { KeyboardContext } from "./Store/keyboard-context";
 import ProgressBar from "./Components/ProgressBar";
 import Modal from "./Components/Modal";
-import wordlistGuesses from "./Assets/Languages/en/wordlist_guesses_en.txt?raw";
-import wordlistAnswers from "./Assets/Languages/en/wordlist_answers_en.txt?raw";
-// import wordlistGuesses from "./Assets/Languages/tr/wordlist_guesses_tr.txt?raw";
-// import wordlistAnswers from "./Assets/Languages/tr/wordlist_guesses_tr.txt?raw";
+import data from "./Assets/Settings/Settings";
+import Header from "./Components/Header";
 
-const validGuessWords = new Set(wordlistGuesses.split("\n"));
-const poolOfTargetWords = new Set(wordlistAnswers.split("\n"));
-
-const TOTAL_LINES = 6;
-const WORD_LENGTH = 5;
-
-function handleGuess(guessedWord) {
+function handleGuess(guessedWord, validGuessWords) {
   return validGuessWords.has(guessedWord.toLowerCase());
 }
 
@@ -30,11 +22,11 @@ function checkGuess(guessedWord, targetWord) {
   return guessedWord === targetWord;
 }
 
-function getNewTileTags(guessedWord, targetWord) {
-  const tileTags = Array.from({ length: WORD_LENGTH }, () => "");
+function getNewTileTags(guessedWord, targetWord, wordLength) {
+  const tileTags = Array.from({ length: wordLength }, () => "");
   const alphabetArray = Array(26).fill(0);
 
-  for (let i = 0; i < WORD_LENGTH; i++) {
+  for (let i = 0; i < wordLength; i++) {
     tileTags[i] = "gray";
     alphabetArray[targetWord[i].charCodeAt(0) - "a".charCodeAt(0)]++;
     if (guessedWord[i] === targetWord[i]) {
@@ -42,7 +34,7 @@ function getNewTileTags(guessedWord, targetWord) {
       alphabetArray[targetWord[i].charCodeAt(0) - "a".charCodeAt(0)]--;
     }
   }
-  for (let i = 0; i < WORD_LENGTH; i++) {
+  for (let i = 0; i < wordLength; i++) {
     if (
       guessedWord[i] !== targetWord[i] &&
       alphabetArray[guessedWord[i].charCodeAt(0) - "a".charCodeAt(0)] > 0
@@ -54,7 +46,7 @@ function getNewTileTags(guessedWord, targetWord) {
   return tileTags;
 }
 
-function generateGuessWord(keyboardColors, poolArray) {
+function generateGuessWord(keyboardColors, poolArray, wordLength) {
   const poolArrayLength = poolArray.length;
   let guessWordIndex = Math.floor(Math.random() * poolArrayLength);
 
@@ -63,7 +55,7 @@ function generateGuessWord(keyboardColors, poolArray) {
   while (!returnableWord) {
     let testWord = poolArray[guessWordIndex % poolArrayLength];
     returnableWord = testWord;
-    for (let i = 0; i < WORD_LENGTH; i++) {
+    for (let i = 0; i < wordLength; i++) {
       if (
         keyboardColors[testWord[i].charCodeAt(0) - "a".charCodeAt(0)] ===
         "dark-gray"
@@ -78,26 +70,41 @@ function generateGuessWord(keyboardColors, poolArray) {
 }
 
 function App() {
-  const poolArray = useMemo(() => Array.from(poolOfTargetWords), []);
-  const [targetWord, setTargetWord] = useState(() => {
-    const idx = Math.floor(Math.random() * poolArray.length);
-    console.log("Target word:", poolArray[idx]);
-    return poolArray[idx];
-  });
+  const [language, setLanguage] = useState();
 
-  const [guesses, setGuesses] = useState(() =>
-    Array.from({ length: TOTAL_LINES }, () => "")
-  );
-
-  const [tileTags, setTileTags] = useState(() =>
-    Array.from({ length: TOTAL_LINES }, () =>
-      Array.from({ length: WORD_LENGTH }, () => "")
-    )
-  );
+  const settings = useMemo(() => data(language), [language]);
 
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState("ongoing");
   const [speedMode, setSpeedMode] = useState(false);
+
+  const totalLines = settings.total_lines;
+  const wordLength = settings.word_length;
+  const big_file_set = settings.big_file_set;
+  const big_file_array = settings.big_file;
+  const small_file_array = settings.small_file;
+
+  const [targetWord, setTargetWord] = useState(() => {
+    const idx = Math.floor(Math.random() * small_file_array.length);
+    console.log("Target word:", small_file_array[idx]);
+    return small_file_array[idx];
+  });
+
+  const [guesses, setGuesses] = useState(() =>
+    Array.from({ length: totalLines }, () => "")
+  );
+
+  const [tileTags, setTileTags] = useState(() =>
+    Array.from({ length: totalLines }, () =>
+      Array.from({ length: wordLength }, () => "")
+    )
+  );
+
+  function handleLanguageChange(language) {
+    setLanguage(language);
+    const newSettings = data(language);
+    handleGameOverReset(newSettings.small_file);
+  }
 
   function handleGameOver(result) {
     setIsOver(result);
@@ -107,7 +114,7 @@ function App() {
         played: 0,
         streak: 0,
         longestStreak: 0,
-        guessLocation: Array(TOTAL_LINES + 1).fill(0),
+        guessLocation: Array(totalLines + 1).fill(0),
       },
     ];
     const payload = {
@@ -125,7 +132,7 @@ function App() {
       history[0].streak
     );
     history[0].guessLocation[
-      (currentGuessIndex + 1 + (result === "won" ? 0 : 1)) % (TOTAL_LINES + 1)
+      (currentGuessIndex + 1 + (result === "won" ? 0 : 1)) % (totalLines + 1)
     ] += 1;
     localStorage.setItem("history", JSON.stringify([...history, payload]));
   }
@@ -135,12 +142,16 @@ function App() {
 
   const submitGuess = useCallback(
     (guessedWord) => {
-      if (guessedWord.length === WORD_LENGTH) {
-        const guessIsValid = handleGuess(guessedWord);
+      if (guessedWord.length === wordLength) {
+        const guessIsValid = handleGuess(guessedWord, big_file_set);
         if (guessIsValid) {
           const isCorrect = checkGuess(guessedWord, targetWord);
 
-          const newTileTags = getNewTileTags(guessedWord, targetWord);
+          const newTileTags = getNewTileTags(
+            guessedWord,
+            targetWord,
+            wordLength
+          );
 
           updateKeyboardColors(guessedWord, newTileTags);
 
@@ -157,7 +168,7 @@ function App() {
             return;
           }
 
-          if (currentGuessIndex + 1 >= TOTAL_LINES) {
+          if (currentGuessIndex + 1 >= totalLines) {
             handleGameOver("lost");
             return;
           }
@@ -169,7 +180,7 @@ function App() {
 
   const handleInput = useCallback(
     (rawKey) => {
-      const key = rawKey.toLowerCase();
+      const key = rawKey.toLocaleLowerCase(language);
 
       if (!/^(?:[a-zçğıöşü]|backspace|enter)$/.test(key)) {
         return;
@@ -196,7 +207,7 @@ function App() {
         return;
       }
 
-      if (guesses[currentGuessIndex].length >= WORD_LENGTH) {
+      if (guesses[currentGuessIndex].length >= wordLength) {
         return;
       }
 
@@ -229,29 +240,34 @@ function App() {
   }, [handleInput]);
 
   const handleProgressBarTimeout = useCallback(() => {
-    const generatedGuessWord = generateGuessWord(keyboardColors, poolArray);
+    const generatedGuessWord = generateGuessWord(
+      keyboardColors,
+      big_file_array,
+      wordLength
+    );
     setGuesses((prev) => {
       const next = [...prev];
       next[currentGuessIndex] = generatedGuessWord;
       return next;
     });
     submitGuess(generatedGuessWord);
-  }, [currentGuessIndex, keyboardColors, poolArray, submitGuess]);
+  }, [currentGuessIndex, keyboardColors, big_file_array, submitGuess]);
 
-  function handleGameOverReset() {
-    setGuesses(Array.from({ length: TOTAL_LINES }, () => ""));
+  function handleGameOverReset(customSmallFileArray) {
+    setGuesses(Array.from({ length: totalLines }, () => ""));
     setTileTags(
-      Array.from({ length: TOTAL_LINES }, () =>
-        Array.from({ length: WORD_LENGTH }, () => "")
+      Array.from({ length: totalLines }, () =>
+        Array.from({ length: wordLength }, () => "")
       )
     );
     setCurrentGuessIndex(0);
     setIsOver("ongoing");
     resetKeyboardColors();
 
-    const idx = Math.floor(Math.random() * poolArray.length);
-    console.log("Target word:", poolArray[idx]);
-    setTargetWord(poolArray[idx]);
+    const wordList = customSmallFileArray || small_file_array;
+    const idx = Math.floor(Math.random() * wordList.length);
+    console.log("Target word:", wordList[idx]);
+    setTargetWord(wordList[idx]);
   }
 
   function handleSpeedMode() {
@@ -261,19 +277,11 @@ function App() {
 
   return (
     <div className="board-area">
-      <header id="app-header">
-        <h1 id="app-title">wordle</h1>
-        <div className="header-toggle">
-          <label className="switch">
-            <input
-              type="checkbox"
-              checked={speedMode}
-              onChange={handleSpeedMode}
-            />
-            <span className="slider round"></span>
-          </label>
-        </div>
-      </header>
+      <Header
+        handleLanguageChange={handleLanguageChange}
+        handleSpeedMode={handleSpeedMode}
+        speedMode={speedMode}
+      />
       <div id="main">
         <div className="board-container">
           {guesses.map((guess, index) => (
@@ -282,6 +290,7 @@ function App() {
               word={guess}
               tags={tileTags[index]}
               isCurrentLine={currentGuessIndex - 1 === index}
+              language={language}
             />
           ))}
           {speedMode && (
@@ -299,7 +308,11 @@ function App() {
           />
         </div>
         <div className="keyboard-container">
-          <Keyboard onKeyPress={handleKeyboardInput} />
+          <Keyboard
+            onKeyPress={handleKeyboardInput}
+            keyboardLayout={settings.keyboard}
+			settings={settings}
+          />
         </div>
       </div>
     </div>

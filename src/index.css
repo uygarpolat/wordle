@@ -20,8 +20,8 @@ h1 {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
+  justify-content: space-between;
+  width: 70%;
   margin-bottom: 12px;
 }
 
@@ -30,10 +30,8 @@ h1 {
 }
 
 .header-toggle {
-  position: absolute;
-  right: 40px;
+  position: relative;
   top: 50%;
-  transform: translateY(-50%);
 }
 
 #main {
@@ -91,7 +89,6 @@ h1 {
   font-size: 24px;
   font-weight: bold;
   text-align: center;
-  text-transform: uppercase;
   transition: color 0.2s ease;
 }
 
@@ -250,7 +247,6 @@ h1 {
 }
 
 .switch {
-  content: "⚡";
   position: relative;
   display: inline-block;
   width: 60px;

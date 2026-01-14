@@ -1,27 +1,14 @@
 import { memo } from "react";
 import Button from "./Button.jsx";
 
-const KEYBOARD_ROWS_ENGLISH_QWERTY_CAPS = [
-  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-  ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-  ["⏎", "Z", "X", "C", "V", "B", "N", "M", "⌫"],
-];
-
-const KEYBOARD_ROWS_TURKISH_QWERTY_CAPS = [
-  ["E", "R", "T", "Y", "U", "I", "O", "P", "Ğ", "Ü"],
-  ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ş", "İ"],
-  ["⏎", "Z", "C", "V", "B", "N", "M", "Ö", "Ç", "⌫"],
-];
-
-function Keyboard({ onKeyPress }) {
+function Keyboard({ onKeyPress, keyboardLayout, settings}) {
   const normalizeKey = (label) => {
     if (label === "⏎") return "enter";
     if (label === "⌫") return "backspace";
-    return label.toLowerCase();
+    return label;
   };
 
-  const current_keyboard = KEYBOARD_ROWS_ENGLISH_QWERTY_CAPS;
-//   const current_keyboard = KEYBOARD_ROWS_TURKISH_QWERTY_CAPS;
+  const current_keyboard = keyboardLayout;
 
   return (
     <div className="keyboard">
@@ -36,8 +23,9 @@ function Keyboard({ onKeyPress }) {
                   ? "Enter key"
                   : ltr === "⌫"
                   ? "Backspace key"
-                  : `${ltr} key`
+                  : '`${ltr} key`'
               }
+			  language={settings.language}
             >
               {ltr}
             </Button>

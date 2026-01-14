@@ -1,10 +1,10 @@
 import { useContext, useEffect, useRef, memo } from "react";
 import { KeyboardContext } from "../Store/keyboard-context";
 
-function Button({ children, onClick, ariaLabel }) {
+function Button({ children, onClick, ariaLabel, language }) {
   const { keyboardColors } = useContext(KeyboardContext);
 
-  const lower = children.toLowerCase();
+  const lower = children.toLocaleLowerCase(language);
   const idx = lower >= "a" && lower <= "z" ? lower.charCodeAt(0) - 97 : -1;
   const buttonColor = idx >= 0 ? keyboardColors[idx] : "gray";
 

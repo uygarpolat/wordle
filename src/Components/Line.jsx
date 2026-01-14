@@ -1,6 +1,6 @@
 import Tile from "./Tile";
 
-export default function Line({ word, tags, isCurrentLine }) {
+export default function Line({ word, tags, isCurrentLine, language }) {
   const LINE_LENGTH = 5;
 
   return (
@@ -11,6 +11,7 @@ export default function Line({ word, tags, isCurrentLine }) {
           letter={word[index]}
           tag={tags[index]}
           animate={isCurrentLine}
+		  language={language}
         />
       ))}
     </div>
