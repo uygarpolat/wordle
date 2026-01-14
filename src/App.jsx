@@ -74,7 +74,6 @@ function generateGuessWord(keyboardColors, poolArray) {
     }
     guessWordIndex++;
   }
-  console.log(returnableWord);
   return returnableWord;
 }
 
@@ -98,6 +97,7 @@ function App() {
 
   const [currentGuessIndex, setCurrentGuessIndex] = useState(0);
   const [isOver, setIsOver] = useState("ongoing");
+  const [speedMode, setSpeedMode] = useState(false);
 
   function handleGameOver(result) {
     setIsOver(result);
@@ -177,8 +177,7 @@ function App() {
 
       if (isOver !== "ongoing") {
         if (key === "enter") {
-          window.removeEventListener("keydown", handleKeyDown);
-          window.location.reload();
+          handleGameOverReset();
         }
         return;
       }
@@ -255,22 +254,28 @@ function App() {
     setTargetWord(poolArray[idx]);
   }
 
+  function handleSpeedMode() {
+    setSpeedMode((prev) => !prev);
+    handleGameOverReset();
+  }
+
   return (
-    <>
+    <div className="board-area">
       <header id="app-header">
         <h1 id="app-title">wordle</h1>
-        {/* <button id="toggle-theme-button">Toggle theme</button> */}
+        <div className="header-toggle">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={speedMode}
+              onChange={handleSpeedMode}
+            />
+            <span className="slider round"></span>
+          </label>
+        </div>
       </header>
       <div id="main">
         <div className="board-container">
-          {false && (
-            <ProgressBar
-              key={currentGuessIndex}
-              isOver={isOver}
-              duration={30000}
-              onTimeout={handleProgressBarTimeout}
-            />
-          )}
           {guesses.map((guess, index) => (
             <Line
               key={index}
@@ -279,6 +284,14 @@ function App() {
               isCurrentLine={currentGuessIndex - 1 === index}
             />
           ))}
+          {speedMode && (
+            <ProgressBar
+              key={currentGuessIndex}
+              isOver={isOver}
+              duration={15000}
+              onTimeout={handleProgressBarTimeout}
+            />
+          )}
           <Modal
             isOver={isOver}
             targetWord={targetWord}
@@ -289,7 +302,7 @@ function App() {
           <Keyboard onKeyPress={handleKeyboardInput} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
