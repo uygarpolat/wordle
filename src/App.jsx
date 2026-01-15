@@ -22,25 +22,26 @@ function checkGuess(guessedWord, targetWord) {
   return guessedWord === targetWord;
 }
 
-function getNewTileTags(guessedWord, targetWord, wordLength) {
-  const tileTags = Array.from({ length: wordLength }, () => "");
-  const alphabetArray = Array(26).fill(0);
+function getNewTileTags(guessedWord, targetWord, settings) {
+  const tileTags = Array(settings.word_length).fill("");
+  const alphabetArray = Array(settings.alphabetLength).fill(0);
 
-  for (let i = 0; i < wordLength; i++) {
+  for (let i = 0; i < settings.word_length; i++) {
     tileTags[i] = "gray";
-    alphabetArray[targetWord[i].charCodeAt(0) - "a".charCodeAt(0)]++;
+    const character = targetWord[i].toLocaleUpperCase();
+    const index = settings.alphabetArray.indexOf(character);
+    alphabetArray[index]++;
     if (guessedWord[i] === targetWord[i]) {
       tileTags[i] = "green";
-      alphabetArray[targetWord[i].charCodeAt(0) - "a".charCodeAt(0)]--;
+      alphabetArray[index]--;
     }
   }
-  for (let i = 0; i < wordLength; i++) {
-    if (
-      guessedWord[i] !== targetWord[i] &&
-      alphabetArray[guessedWord[i].charCodeAt(0) - "a".charCodeAt(0)] > 0
-    ) {
+  for (let i = 0; i < settings.word_length; i++) {
+    const character = guessedWord[i].toLocaleUpperCase();
+    const index = settings.alphabetArray.indexOf(character);
+    if (guessedWord[i] !== targetWord[i] && alphabetArray[index] > 0) {
       tileTags[i] = "yellow";
-      alphabetArray[guessedWord[i].charCodeAt(0) - "a".charCodeAt(0)]--;
+      alphabetArray[index]--;
     }
   }
   return tileTags;
@@ -137,8 +138,21 @@ function App() {
     localStorage.setItem("history", JSON.stringify([...history, payload]));
   }
 
-  const { keyboardColors, updateKeyboardColors, resetKeyboardColors } =
-    useContext(KeyboardContext);
+  const {
+    keyboardColors,
+    updateKeyboardColors,
+    resetKeyboardColors,
+    setKeyboardLength,
+    handleAlphabetArray,
+  } = useContext(KeyboardContext);
+
+  useEffect(() => {
+    setKeyboardLength(settings.alphabetLength);
+  }, [settings.alphabetLength, setKeyboardLength]);
+
+  useEffect(() => {
+    handleAlphabetArray(settings.language);
+  }, [handleAlphabetArray, settings.language]);
 
   const submitGuess = useCallback(
     (guessedWord) => {
@@ -147,11 +161,7 @@ function App() {
         if (guessIsValid) {
           const isCorrect = checkGuess(guessedWord, targetWord);
 
-          const newTileTags = getNewTileTags(
-            guessedWord,
-            targetWord,
-            wordLength
-          );
+          const newTileTags = getNewTileTags(guessedWord, targetWord, settings);
 
           updateKeyboardColors(guessedWord, newTileTags);
 
@@ -297,7 +307,7 @@ function App() {
             <ProgressBar
               key={currentGuessIndex}
               isOver={isOver}
-              duration={15000}
+              duration={1000}
               onTimeout={handleProgressBarTimeout}
             />
           )}
@@ -311,7 +321,7 @@ function App() {
           <Keyboard
             onKeyPress={handleKeyboardInput}
             keyboardLayout={settings.keyboard}
-			settings={settings}
+            settings={settings}
           />
         </div>
       </div>
