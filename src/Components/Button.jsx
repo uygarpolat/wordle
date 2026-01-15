@@ -1,12 +1,12 @@
 import { useContext, useEffect, useRef, memo } from "react";
 import { KeyboardContext } from "../Store/keyboard-context";
 
-function Button({ children, onClick, ariaLabel, language }) {
+function Button({ children, onClick, ariaLabel, settings }) {
   const { keyboardColors } = useContext(KeyboardContext);
 
-  const lower = children.toLocaleLowerCase(language);
-  const idx = lower >= "a" && lower <= "z" ? lower.charCodeAt(0) - 97 : -1;
-  const buttonColor = idx >= 0 ? keyboardColors[idx] : "gray";
+  const alphabetArray = settings.alphabetArray;
+  const index = alphabetArray.indexOf(children);
+  const buttonColor = keyboardColors[index];
 
   const COLOR_MAP = {
     gray: "rgb(209, 184, 184)",
@@ -24,11 +24,13 @@ function Button({ children, onClick, ariaLabel, language }) {
   const shouldAnimate =
     buttonColor !== prevColor &&
     (buttonColor === "green" || buttonColor === "yellow");
-	
+
   return (
     <button
       type="button"
-      className={`button button-${buttonColor} ${shouldAnimate ? "animate" : ""}`}
+      className={`button button-${buttonColor} ${
+        shouldAnimate ? "animate" : ""
+      }`}
       onClick={onClick}
       aria-label={ariaLabel}
       style={{

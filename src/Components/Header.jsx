@@ -7,7 +7,7 @@ export default function Header({
 }) {
   return (
     <header id="app-header">
-      {false && <LanguageDropdown onLanguageChange={handleLanguageChange} />}
+      <LanguageDropdown onLanguageChange={handleLanguageChange} />
       <h1 id="app-title">wordle</h1>
       <div className="header-toggle">
         <label className="switch">

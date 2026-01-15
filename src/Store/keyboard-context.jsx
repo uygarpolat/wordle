@@ -1,8 +1,5 @@
 import { createContext, useState } from "react";
-import {
-  CAPITAL_LETTERS_EN,
-  CAPITAL_LETTERS_TR,
-} from "../Assets/Settings/Settings.jsx";
+import { ALPHABET_ARRAYS } from "../Assets/Settings/Settings.jsx";
 
 export const KeyboardContext = createContext({
   keyboardColors: [],
@@ -15,7 +12,7 @@ export const KeyboardContext = createContext({
 export const KeyboardContextProvider = ({ children }) => {
   const [keyboardColors, setKeyboardColors] = useState(Array(26).fill("gray"));
   const [length, setLength] = useState(26);
-  const [alphabetArray, setAlphabetArray] = useState(CAPITAL_LETTERS_EN);
+  const [alphabetArray, setAlphabetArray] = useState(ALPHABET_ARRAYS["en"]);
 
   function setKeyboardLength(newLength) {
     if (newLength !== length) {
@@ -24,18 +21,16 @@ export const KeyboardContextProvider = ({ children }) => {
     }
   }
 
-  function handleAlphabetArray(language) {
-    setAlphabetArray(
-      language === "en" ? CAPITAL_LETTERS_EN : CAPITAL_LETTERS_TR
-    );
+  function handleAlphabetArray(lang) {
+	setAlphabetArray(ALPHABET_ARRAYS[lang]);
   }
 
-  function updateKeyboardColors(word, colorTags) {
+  function updateKeyboardColors(word, colorTags, language) {
     setKeyboardColors((prev) => {
       const next = [...prev];
 
       for (let i = 0; i < word.length; i++) {
-        const character = word[i].toLocaleUpperCase();
+        const character = word[i].toLocaleUpperCase(language);
         const index = alphabetArray.indexOf(character);
 
         if (colorTags[i] === "green") {

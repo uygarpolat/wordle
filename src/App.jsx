@@ -163,7 +163,7 @@ function App() {
 
           const newTileTags = getNewTileTags(guessedWord, targetWord, settings);
 
-          updateKeyboardColors(guessedWord, newTileTags);
+          updateKeyboardColors(guessedWord, newTileTags, language);
 
           setTileTags((prev) => {
             const next = [...prev];
@@ -185,16 +185,16 @@ function App() {
         }
       }
     },
-    [currentGuessIndex, targetWord, updateKeyboardColors]
+    [currentGuessIndex, targetWord, updateKeyboardColors, language]
   );
 
   const handleInput = useCallback(
     (rawKey) => {
       const key = rawKey.toLocaleLowerCase(language);
 
-      if (!/^(?:[a-zçğıöşü]|backspace|enter)$/.test(key)) {
-        return;
-      }
+	  if (!settings.allowedKeySet.has(key)) {
+		return;
+	  }
 
       if (isOver !== "ongoing") {
         if (key === "enter") {

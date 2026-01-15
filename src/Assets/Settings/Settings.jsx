@@ -15,7 +15,56 @@ const KEYBOARD_TR = [
   ["⏎", "Z", "C", "V", "B", "N", "M", "Ö", "Ç", "⌫"],
 ];
 
-export const CAPITAL_LETTERS_EN = [
+const KEYBOARD_FI = [
+  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "Å"],
+  ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ö", "Ä"],
+  ["⏎", "Z", "X", "C", "V", "B", "N", "M", "⌫"],
+];
+
+const KEYBOARD_ES = [
+  ["A", "Á", "B", "C", "D", "E", "É", "F", "G", "H"],
+  ["I", "Í", "J", "K", "L", "M", "N", "Ñ", "O", "Ó"],
+  ["P", "Q", "R", "S", "T", "U", "Ú", "Ü", "V", "W"],
+  ["⏎", "X", "Y", "Z", "⌫"],
+];
+
+const CAPITAL_LETTERS_ES = [
+  "A",
+  "Á",
+  "B",
+  "C",
+  "D",
+  "E",
+  "É",
+  "F",
+  "G",
+  "H",
+  "I",
+  "Í",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "Ñ",
+  "O",
+  "Ó",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "Ú",
+  "Ü",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+];
+
+const CAPITAL_LETTERS_EN = [
   "A",
   "B",
   "C",
@@ -44,7 +93,7 @@ export const CAPITAL_LETTERS_EN = [
   "Z",
 ];
 
-export const CAPITAL_LETTERS_TR = [
+const CAPITAL_LETTERS_TR = [
   "A",
   "B",
   "C",
@@ -76,23 +125,71 @@ export const CAPITAL_LETTERS_TR = [
   "Z",
 ];
 
+const CAPITAL_LETTERS_FI = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+  "Å",
+  "Ä",
+  "Ö",
+];
+
+export const KEYBOARD_LAYOUTS = {
+  en: KEYBOARD_EN,
+  tr: KEYBOARD_TR,
+  fi: KEYBOARD_FI,
+  es: KEYBOARD_ES,
+};
+
+export const ALPHABET_ARRAYS = {
+  en: CAPITAL_LETTERS_EN,
+  tr: CAPITAL_LETTERS_TR,
+  fi: CAPITAL_LETTERS_FI,
+  es: CAPITAL_LETTERS_ES,
+};
+
 const wordListFiles = import.meta.glob("../Languages/*/*.txt", {
   as: "raw",
   eager: true,
 });
 
 function data(language = "en") {
-  const keyboardLayouts = {
-    en: KEYBOARD_EN,
-    tr: KEYBOARD_TR,
-  };
+	
+  function makeAllowedKeySet(language) {
+    const allowed = new Set(["enter", "backspace"]);
 
-  const alphabetArrays = {
-    en: CAPITAL_LETTERS_EN,
-    tr: CAPITAL_LETTERS_TR,
-  };
+    for (const letter of ALPHABET_ARRAYS[language]) {
+      if (letter === "⏎" || letter === "⌫") continue;
+      allowed.add(letter.toLocaleLowerCase(language));
+    }
+    return allowed;
+  }
 
-  const alphabetLength = alphabetArrays[language].length;
+  const allowedKeySet = makeAllowedKeySet(language);
+  const alphabetLength = ALPHABET_ARRAYS[language].length;
 
   const big_file_path = `../Languages/${language}/${BIG_FILE}`;
   const small_file_path = `../Languages/${language}/${SMALL_FILE}`;
@@ -114,9 +211,10 @@ function data(language = "en") {
     small_file_set,
     total_lines: TOTAL_LINES,
     word_length: WORD_LENGTH,
-    keyboard: keyboardLayouts[language] || KEYBOARD_EN,
-    alphabetArray: alphabetArrays[language] || CAPITAL_LETTERS_EN,
+    keyboard: KEYBOARD_LAYOUTS[language],
+    alphabetArray: ALPHABET_ARRAYS[language],
     alphabetLength,
+    allowedKeySet,
   };
 }
 

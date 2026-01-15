@@ -25,7 +25,7 @@ function Keyboard({ onKeyPress, keyboardLayout, settings}) {
                   ? "Backspace key"
                   : '`${ltr} key`'
               }
-			  language={settings.language}
+			  settings={settings}
             >
               {ltr}
             </Button>

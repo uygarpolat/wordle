@@ -4,3 +4,5 @@ dist/
 .DS_Store
 *.log and npm-debug.log*
 TODO.md
+input.txt
+converter.py
