@@ -307,7 +307,7 @@ function App() {
             <ProgressBar
               key={currentGuessIndex}
               isOver={isOver}
-              duration={1000}
+              duration={15000}
               onTimeout={handleProgressBarTimeout}
             />
           )}
