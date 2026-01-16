@@ -176,8 +176,13 @@ const wordListFiles = import.meta.glob("../Languages/*/*.txt", {
   eager: true,
 });
 
+const DATA_CACHE = {};
+
 function data(language = "en") {
-	
+  if (DATA_CACHE[language]) {
+    return DATA_CACHE[language];
+  }
+
   function makeAllowedKeySet(language) {
     const allowed = new Set(["enter", "backspace"]);
 
@@ -203,7 +208,7 @@ function data(language = "en") {
   const big_file = Array.from(big_file_set);
   const small_file = Array.from(small_file_set);
 
-  return {
+  const payload = {
     language,
     big_file,
     small_file,
@@ -216,6 +221,9 @@ function data(language = "en") {
     alphabetLength,
     allowedKeySet,
   };
+
+  DATA_CACHE[language] = payload;
+  return payload;
 }
 
 export default data;

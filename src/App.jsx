@@ -103,8 +103,6 @@ function App() {
 
   function handleLanguageChange(language) {
     setLanguage(language);
-    const newSettings = data(language);
-    handleGameOverReset(newSettings.small_file);
   }
 
   function handleGameOver(result) {
@@ -154,6 +152,14 @@ function App() {
     handleAlphabetArray(settings.language);
   }, [handleAlphabetArray, settings.language]);
 
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+    handleGameOverReset();
+  }, [language]);
+
   const submitGuess = useCallback(
     (guessedWord) => {
       if (guessedWord.length === wordLength) {
@@ -185,16 +191,25 @@ function App() {
         }
       }
     },
-    [currentGuessIndex, targetWord, updateKeyboardColors, language]
+    [
+      big_file_set,
+      currentGuessIndex,
+      language,
+      settings,
+      targetWord,
+      totalLines,
+      updateKeyboardColors,
+      wordLength,
+    ]
   );
 
   const handleInput = useCallback(
     (rawKey) => {
       const key = rawKey.toLocaleLowerCase(language);
 
-	  if (!settings.allowedKeySet.has(key)) {
-		return;
-	  }
+      if (!settings.allowedKeySet.has(key)) {
+        return;
+      }
 
       if (isOver !== "ongoing") {
         if (key === "enter") {
@@ -231,6 +246,7 @@ function App() {
   );
 
   const handleInputRef = useRef(handleInput);
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
     handleInputRef.current = handleInput;
@@ -263,7 +279,7 @@ function App() {
     submitGuess(generatedGuessWord);
   }, [currentGuessIndex, keyboardColors, big_file_array, submitGuess]);
 
-  function handleGameOverReset(customSmallFileArray) {
+  function handleGameOverReset() {
     setGuesses(Array.from({ length: totalLines }, () => ""));
     setTileTags(
       Array.from({ length: totalLines }, () =>
@@ -274,7 +290,7 @@ function App() {
     setIsOver("ongoing");
     resetKeyboardColors();
 
-    const wordList = customSmallFileArray || small_file_array;
+    const wordList = small_file_array;
     const idx = Math.floor(Math.random() * wordList.length);
     console.log("Target word:", wordList[idx]);
     setTargetWord(wordList[idx]);
