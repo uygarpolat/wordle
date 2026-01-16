@@ -186,7 +186,7 @@ function resultScreen(language, isOver, targetWord, history, onPlayAgain) {
           <strong>{history[0].streak}</strong><br/>En uzun seri: <strong>{history[0].longestStreak}</strong>
         </p>
         <button className="play-again-button" onClick={onPlayAgain}>
-          Play again
+          YENİDEN OYNA
         </button>
       </div>
     );
