@@ -182,8 +182,8 @@ function resultScreen(language, isOver, targetWord, history, onPlayAgain) {
           <strong>{targetWord}</strong> idi.
         </p>
         <p>
-          Şu ana kadarki skorunuz: <strong>{history[0].won}/{history[0].played}</strong><br/>seri:{" "}
-          <strong>{history[0].streak}</strong><br/>en uzun seri: <strong>{history[0].longestStreak}</strong>
+          Şu ana kadarki skorunuz: <strong>{history[0].won}/{history[0].played}</strong><br/>Seri:{" "}
+          <strong>{history[0].streak}</strong><br/>En uzun seri: <strong>{history[0].longestStreak}</strong>
         </p>
         <button className="play-again-button" onClick={onPlayAgain}>
           Play again
