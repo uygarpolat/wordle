@@ -2,6 +2,22 @@ body {
   background-color: rgb(71, 173, 221);
 }
 
+body.bg-flash-red {
+  animation: bgPulseRed 750ms ease-in-out;
+}
+
+@keyframes bgPulseRed {
+  0% {
+    background-color: rgb(71, 173, 221);
+  }
+  50% {
+    background-color: purple;
+  }
+  100% {
+    background-color: rgb(71, 173, 221);
+  }
+}
+
 h1 {
   text-align: center;
   color: blue;

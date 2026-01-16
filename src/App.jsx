@@ -91,20 +91,36 @@ function App() {
   });
 
   const [guesses, setGuesses] = useState(() =>
-    Array.from({ length: totalLines }, () => "")
+    Array.from({ length: totalLines }, () => ""),
   );
 
   const [tileTags, setTileTags] = useState(() =>
     Array.from({ length: totalLines }, () =>
-      Array.from({ length: wordLength }, () => "")
-    )
+      Array.from({ length: wordLength }, () => ""),
+    ),
   );
+
+  const flashTimeoutRef = useRef(null);
+  const triggerInvalidFlash = useCallback(() => {
+    document.body.classList.add("bg-flash-red");
+    if (flashTimeoutRef.current) {
+      clearTimeout(flashTimeoutRef.current);
+    }
+    flashTimeoutRef.current = setTimeout(() => {
+      document.body.classList.remove("bg-flash-red");
+      flashTimeoutRef.current = null;
+    }, 750);
+  }, []);
 
   function handleLanguageChange(language) {
     setLanguage(language);
   }
 
-  function handleGameOver(result, guessesSnapshot = guesses, guessIndex = currentGuessIndex) {
+  function handleGameOver(
+    result,
+    guessesSnapshot = guesses,
+    guessIndex = currentGuessIndex,
+  ) {
     setIsOver(result);
     const history = JSON.parse(localStorage.getItem("history")) || [
       {
@@ -117,8 +133,8 @@ function App() {
     ];
     const payload = {
       date: new Date().toISOString(),
-	  language: settings.language,
-	  speedMode,
+      language: settings.language,
+      speedMode,
       word: targetWord,
       result: result,
       guesses: guessesSnapshot,
@@ -129,7 +145,7 @@ function App() {
     history[0].streak = result === "won" ? history[0].streak + 1 : 0;
     history[0].longestStreak = Math.max(
       history[0].longestStreak,
-      history[0].streak
+      history[0].streak,
     );
     history[0].guessLocation[
       (guessIndex + 1 + (result === "won" ? 0 : 1)) % (totalLines + 1)
@@ -163,49 +179,56 @@ function App() {
 
   const submitGuess = useCallback(
     (guessedWord) => {
-      if (guessedWord.length === wordLength) {
-        const guessIsValid = handleGuess(guessedWord, big_file_set);
-        if (guessIsValid) {
-          const isCorrect = checkGuess(guessedWord, targetWord);
+      if (guessedWord.length !== wordLength) {
+        triggerInvalidFlash();
+        return;
+      }
 
-          const newTileTags = getNewTileTags(guessedWord, targetWord, settings);
+      const guessIsValid = handleGuess(guessedWord, big_file_set);
+      if (!guessIsValid) {
+        triggerInvalidFlash();
+        return;
+      }
 
-          updateKeyboardColors(guessedWord, newTileTags, language);
+      const isCorrect = checkGuess(guessedWord, targetWord);
 
-          setTileTags((prev) => {
-            const next = [...prev];
-            next[currentGuessIndex] = newTileTags;
-            return next;
-          });
+      const newTileTags = getNewTileTags(guessedWord, targetWord, settings);
 
-          setCurrentGuessIndex((prev) => prev + 1);
+      updateKeyboardColors(guessedWord, newTileTags, language);
 
-          if (isCorrect) {
-            const nextGuesses = [...guesses];
-            nextGuesses[currentGuessIndex] = guessedWord;
-            handleGameOver("won", nextGuesses, currentGuessIndex);
-            return;
-          }
+      setTileTags((prev) => {
+        const next = [...prev];
+        next[currentGuessIndex] = newTileTags;
+        return next;
+      });
 
-          if (currentGuessIndex + 1 >= totalLines) {
-            const nextGuesses = [...guesses];
-            nextGuesses[currentGuessIndex] = guessedWord;
-            handleGameOver("lost", nextGuesses, currentGuessIndex);
-            return;
-          }
-        }
+      setCurrentGuessIndex((prev) => prev + 1);
+
+      if (isCorrect) {
+        const nextGuesses = [...guesses];
+        nextGuesses[currentGuessIndex] = guessedWord;
+        handleGameOver("won", nextGuesses, currentGuessIndex);
+        return;
+      }
+
+      if (currentGuessIndex + 1 >= totalLines) {
+        const nextGuesses = [...guesses];
+        nextGuesses[currentGuessIndex] = guessedWord;
+        handleGameOver("lost", nextGuesses, currentGuessIndex);
+        return;
       }
     },
     [
       big_file_set,
       currentGuessIndex,
       language,
+      triggerInvalidFlash,
       settings,
       targetWord,
       totalLines,
       updateKeyboardColors,
       wordLength,
-    ]
+    ],
   );
 
   const handleInput = useCallback(
@@ -247,7 +270,7 @@ function App() {
         return next;
       });
     },
-    [guesses, currentGuessIndex, isOver, targetWord, submitGuess]
+    [guesses, currentGuessIndex, isOver, targetWord, submitGuess],
   );
 
   const handleInputRef = useRef(handleInput);
@@ -270,12 +293,21 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleInput]);
 
+  useEffect(() => {
+    return () => {
+      if (flashTimeoutRef.current) {
+        clearTimeout(flashTimeoutRef.current);
+      }
+      document.body.classList.remove("bg-flash-red");
+    };
+  }, []);
+
   const handleProgressBarTimeout = useCallback(() => {
     const generatedGuessWord = generateGuessWord(
       keyboardColors,
       settings,
       big_file_array,
-      wordLength
+      wordLength,
     );
     setGuesses((prev) => {
       const next = [...prev];
@@ -289,8 +321,8 @@ function App() {
     setGuesses(Array.from({ length: totalLines }, () => ""));
     setTileTags(
       Array.from({ length: totalLines }, () =>
-        Array.from({ length: wordLength }, () => "")
-      )
+        Array.from({ length: wordLength }, () => ""),
+      ),
     );
     setCurrentGuessIndex(0);
     setIsOver("ongoing");
@@ -334,7 +366,7 @@ function App() {
             />
           )}
           <Modal
-			settings={settings}
+            settings={settings}
             isOver={isOver}
             targetWord={targetWord}
             onPlayAgain={handleGameOverReset}
