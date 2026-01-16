@@ -28,7 +28,7 @@ function getNewTileTags(guessedWord, targetWord, settings) {
 
   for (let i = 0; i < settings.word_length; i++) {
     tileTags[i] = "gray";
-    const character = targetWord[i].toLocaleUpperCase();
+    const character = targetWord[i].toLocaleUpperCase(settings.language);
     const index = settings.alphabetArray.indexOf(character);
     alphabetArray[index]++;
     if (guessedWord[i] === targetWord[i]) {
@@ -37,7 +37,7 @@ function getNewTileTags(guessedWord, targetWord, settings) {
     }
   }
   for (let i = 0; i < settings.word_length; i++) {
-    const character = guessedWord[i].toLocaleUpperCase();
+    const character = guessedWord[i].toLocaleUpperCase(settings.language);
     const index = settings.alphabetArray.indexOf(character);
     if (guessedWord[i] !== targetWord[i] && alphabetArray[index] > 0) {
       tileTags[i] = "yellow";
@@ -47,7 +47,7 @@ function getNewTileTags(guessedWord, targetWord, settings) {
   return tileTags;
 }
 
-function generateGuessWord(keyboardColors, poolArray, wordLength) {
+function generateGuessWord(keyboardColors, settings, poolArray, wordLength) {
   const poolArrayLength = poolArray.length;
   let guessWordIndex = Math.floor(Math.random() * poolArrayLength);
 
@@ -57,10 +57,9 @@ function generateGuessWord(keyboardColors, poolArray, wordLength) {
     let testWord = poolArray[guessWordIndex % poolArrayLength];
     returnableWord = testWord;
     for (let i = 0; i < wordLength; i++) {
-      if (
-        keyboardColors[testWord[i].charCodeAt(0) - "a".charCodeAt(0)] ===
-        "dark-gray"
-      ) {
+      const character = returnableWord[i].toLocaleUpperCase(settings.language);
+      const index = settings.alphabetArray.indexOf(character);
+      if (keyboardColors[index] === "dark-gray") {
         returnableWord = "";
         break;
       }
@@ -205,7 +204,7 @@ function App() {
 
   const handleInput = useCallback(
     (rawKey) => {
-      const key = rawKey.toLocaleLowerCase(language);
+      const key = rawKey.toLocaleLowerCase(settings.language);
 
       if (!settings.allowedKeySet.has(key)) {
         return;
@@ -268,6 +267,7 @@ function App() {
   const handleProgressBarTimeout = useCallback(() => {
     const generatedGuessWord = generateGuessWord(
       keyboardColors,
+      settings,
       big_file_array,
       wordLength
     );
@@ -323,7 +323,7 @@ function App() {
             <ProgressBar
               key={`${currentGuessIndex}-${language}`}
               isOver={isOver}
-              duration={15000}
+              duration={15 * 1000}
               onTimeout={handleProgressBarTimeout}
             />
           )}
