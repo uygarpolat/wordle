@@ -46,7 +46,7 @@ export const KeyboardContextProvider = ({ children }) => {
   }
 
   function resetKeyboardColors() {
-    setKeyboardColors(Array(length).fill("gray"));
+    setKeyboardColors((prev) => Array(prev.length).fill("gray"));
   }
 
   const payload = {
