@@ -171,6 +171,45 @@ export const ALPHABET_ARRAYS = {
   es: CAPITAL_LETTERS_ES,
 };
 
+function resultScreen(language, isOver, targetWord, history, onPlayAgain) {
+  let modalContent = null;
+  if (language === "tr") {
+    modalContent = (
+      <div className="modal">
+        <p>
+          {isOver === "won" ? "Kazandınız!" : "Kaybettiniz!"} Kelime{" "}
+          {isOver === "won" ? "gerçekten " : ""}
+          <strong>{targetWord}</strong> idi.
+        </p>
+        <p>
+          Şu ana kadarki skorunuz: <strong>{history[0].won}/{history[0].played}</strong><br/>seri:
+          <strong>{history[0].streak}</strong><br/>en uzun seri: <strong>{history[0].longestStreak}</strong>
+        </p>
+        <button className="play-again-button" onClick={onPlayAgain}>
+          Play again
+        </button>
+      </div>
+    );
+  } else {
+    modalContent = (
+      <div className="modal">
+        <p>
+          you {isOver}! the word was {isOver === "won" ? "indeed " : ""}
+          <strong>{targetWord}</strong>
+        </p>
+        <p>
+          your score so far: <strong>{history[0].won}/{history[0].played}</strong><br/>streak:{" "}
+          <strong>{history[0].streak}</strong><br/>longest streak: <strong>{history[0].longestStreak}</strong>
+        </p>
+        <button className="play-again-button" onClick={onPlayAgain}>
+          Play again
+        </button>
+      </div>
+    );
+  }
+  return modalContent;
+}
+
 const wordListFiles = import.meta.glob("../Languages/*/*.txt", {
   as: "raw",
   eager: true,
@@ -220,6 +259,7 @@ function data(language = "en") {
     alphabetArray: ALPHABET_ARRAYS[language],
     alphabetLength,
     allowedKeySet,
+    resultScreen,
   };
 
   DATA_CACHE[language] = payload;

@@ -104,7 +104,7 @@ function App() {
     setLanguage(language);
   }
 
-  function handleGameOver(result) {
+  function handleGameOver(result, guessesSnapshot = guesses, guessIndex = currentGuessIndex) {
     setIsOver(result);
     const history = JSON.parse(localStorage.getItem("history")) || [
       {
@@ -117,10 +117,12 @@ function App() {
     ];
     const payload = {
       date: new Date().toISOString(),
+	  language: settings.language,
+	  speedMode,
       word: targetWord,
       result: result,
-      guesses: guesses,
-      lastGuessIndex: currentGuessIndex + 1,
+      guesses: guessesSnapshot,
+      lastGuessIndex: guessIndex + 1,
     };
     history[0].won += result === "won" ? 1 : 0;
     history[0].played++;
@@ -130,7 +132,7 @@ function App() {
       history[0].streak
     );
     history[0].guessLocation[
-      (currentGuessIndex + 1 + (result === "won" ? 0 : 1)) % (totalLines + 1)
+      (guessIndex + 1 + (result === "won" ? 0 : 1)) % (totalLines + 1)
     ] += 1;
     localStorage.setItem("history", JSON.stringify([...history, payload]));
   }
@@ -179,12 +181,16 @@ function App() {
           setCurrentGuessIndex((prev) => prev + 1);
 
           if (isCorrect) {
-            handleGameOver("won");
+            const nextGuesses = [...guesses];
+            nextGuesses[currentGuessIndex] = guessedWord;
+            handleGameOver("won", nextGuesses, currentGuessIndex);
             return;
           }
 
           if (currentGuessIndex + 1 >= totalLines) {
-            handleGameOver("lost");
+            const nextGuesses = [...guesses];
+            nextGuesses[currentGuessIndex] = guessedWord;
+            handleGameOver("lost", nextGuesses, currentGuessIndex);
             return;
           }
         }
@@ -328,6 +334,7 @@ function App() {
             />
           )}
           <Modal
+			settings={settings}
             isOver={isOver}
             targetWord={targetWord}
             onPlayAgain={handleGameOverReset}
