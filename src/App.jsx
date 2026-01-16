@@ -321,7 +321,7 @@ function App() {
           ))}
           {speedMode && (
             <ProgressBar
-              key={currentGuessIndex}
+              key={`${currentGuessIndex}-${language}`}
               isOver={isOver}
               duration={15000}
               onTimeout={handleProgressBarTimeout}
