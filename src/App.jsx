@@ -370,6 +370,7 @@ function App() {
             isOver={isOver}
             targetWord={targetWord}
             onPlayAgain={handleGameOverReset}
+			tileTags={tileTags}
           />
         </div>
         <div className="keyboard-container">

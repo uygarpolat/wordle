@@ -1,3 +1,5 @@
+import Share from "../../Components/Share";
+
 const BIG_FILE = "wordlist_big.txt";
 const SMALL_FILE = "wordlist_small.txt";
 const TOTAL_LINES = 6;
@@ -171,7 +173,7 @@ export const ALPHABET_ARRAYS = {
   es: CAPITAL_LETTERS_ES,
 };
 
-function resultScreen(language, isOver, targetWord, history, onPlayAgain) {
+function resultScreen(language, isOver, targetWord, history, onPlayAgain, tileTags) {
   let modalContent = null;
   if (language === "tr") {
     modalContent = (
@@ -188,6 +190,7 @@ function resultScreen(language, isOver, targetWord, history, onPlayAgain) {
         <button className="play-again-button" onClick={onPlayAgain}>
           YENİDEN OYNA
         </button>
+        <Share tileTags={tileTags}>PAYLAŞ</Share>
       </div>
     );
   } else {
@@ -204,6 +207,7 @@ function resultScreen(language, isOver, targetWord, history, onPlayAgain) {
         <button className="play-again-button" onClick={onPlayAgain}>
           Play again
         </button>
+		<Share tileTags={tileTags}>SHARE</Share>
       </div>
     );
   }

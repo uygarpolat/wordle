@@ -6,3 +6,5 @@ dist/
 TODO.md
 input.txt
 converter.py
+localhost+1.pem
+localhost+1-key.pem

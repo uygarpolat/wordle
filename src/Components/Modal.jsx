@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 
-export default function Modal({ settings, isOver, targetWord, onPlayAgain }) {
+export default function Modal({ settings, isOver, targetWord, onPlayAgain, tileTags }) {
   let modalContent = null;
 
   if (isOver !== "ongoing") {
@@ -10,7 +10,8 @@ export default function Modal({ settings, isOver, targetWord, onPlayAgain }) {
       isOver,
       targetWord,
       history,
-      onPlayAgain
+      onPlayAgain,
+	  tileTags,
     );
   }
 
