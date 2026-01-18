@@ -248,7 +248,8 @@ body.bg-flash-red {
 }
 
 .button[aria-label="Enter key"] {
-	font-size: clamp(0.8rem, 2vw, 20px);
+	font-size: clamp(0px, 3vw, 12px);
+	font-weight: bold;
 	background-color: rgb(54, 238, 54);
 }
 
