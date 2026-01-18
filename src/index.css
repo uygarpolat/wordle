@@ -350,7 +350,9 @@ body.bg-flash-red {
 }
 
 .switch input:checked+.slider::after {
-	content: "⚡";
+	content: "⏱️";
+	font-size: 20px;
+	left: 10%;
 	opacity: 1;
 }
 
