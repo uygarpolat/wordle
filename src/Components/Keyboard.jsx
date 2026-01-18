@@ -1,11 +1,21 @@
-import { memo } from "react";
+import { memo, useState, useEffect } from "react";
 import Button from "./Button.jsx";
 
-function Keyboard({ onKeyPress, keyboardLayout, settings}) {
+function Keyboard({ onKeyPress, keyboardLayout, settings }) {
+  const longestRowLength = Math.max(...keyboardLayout.map((row) => row.length));
+  const buttonWidthNumeric = 100 / longestRowLength;
+//   const buttonWidthNumeric = 50 / longestRowLength;
+
   const normalizeKey = (label) => {
     if (label === "⏎") return "enter";
     if (label === "⌫") return "backspace";
     return label;
+  };
+
+  const displayKey = (label) => {
+	if (label === "⏎") return "ENTER";
+	if (label === "⌫") return "⌫";
+	return label;
   };
 
   const current_keyboard = keyboardLayout;
@@ -23,11 +33,12 @@ function Keyboard({ onKeyPress, keyboardLayout, settings}) {
                   ? "Enter key"
                   : ltr === "⌫"
                   ? "Backspace key"
-                  : '`${ltr} key`'
+                  : "`${ltr} key`"
               }
-			  settings={settings}
+              settings={settings}
+              widthStyle={`${buttonWidthNumeric * 1}vw`}
             >
-              {ltr}
+              {displayKey(ltr)}
             </Button>
           ))}
         </div>

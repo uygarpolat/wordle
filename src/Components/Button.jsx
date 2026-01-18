@@ -1,7 +1,13 @@
 import { useContext, useEffect, useRef, memo } from "react";
 import { KeyboardContext } from "../Store/keyboard-context";
 
-function Button({ children, onClick, ariaLabel, settings }) {
+function Button({
+  children,
+  onClick,
+  ariaLabel,
+  settings,
+  widthStyle,
+}) {
   const { keyboardColors } = useContext(KeyboardContext);
 
   const alphabetArray = settings.alphabetArray;
@@ -36,6 +42,7 @@ function Button({ children, onClick, ariaLabel, settings }) {
       style={{
         "--prev-color": COLOR_MAP[prevColor],
         "--next-color": COLOR_MAP[buttonColor],
+        "--widthStyle": widthStyle,
       }}
     >
       {children}

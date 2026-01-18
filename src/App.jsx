@@ -340,13 +340,13 @@ function App() {
   }
 
   return (
-    <div className="board-area">
+    <div className="main">
       <Header
         handleLanguageChange={handleLanguageChange}
         handleSpeedMode={handleSpeedMode}
         speedMode={speedMode}
       />
-      <div id="main">
+      <div id="board-and-keyboard">
         <div className="board-container">
           {guesses.map((guess, index) => (
             <Line

@@ -1,6 +1,6 @@
 export default function LanguageDropdown({ onLanguageChange }) {
   return (
-    <div>
+    <div className="language-dropdown">
       <select onChange={(e) => onLanguageChange(e.target.value)}>
         <option value="en">🇬🇧 English</option>
         <option value="tr">🇹🇷 Türkçe</option>
