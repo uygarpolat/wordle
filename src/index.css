@@ -239,7 +239,6 @@ body.bg-flash-red {
 	-webkit-appearance: none;
 	appearance: none;
 	font-size: clamp(20px, 2vw, 20px);
-	font-weight: bold;
 }
 
 .button[aria-label="Enter key"],
