@@ -14,8 +14,8 @@ export default function ProgressBar({ isOver, duration, onTimeout }) {
     if (isOver !== "ongoing") return;
 
     const interval = setInterval(() => {
-      setRemainingTime((prev) => Math.max(0, prev - 10));
-    }, 10);
+      setRemainingTime((prev) => Math.max(0, prev - 50));
+    }, 50);
     return () => clearInterval(interval);
   }, [isOver]);
 
