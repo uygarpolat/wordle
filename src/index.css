@@ -46,7 +46,8 @@ body.bg-flash-red {
 
 .header-toggle {
 	justify-self: end;
-	top: 50%;
+	display: flex;
+	align-items: center;
 }
 
 #board-and-keyboard {
@@ -290,6 +291,45 @@ body.bg-flash-red {
 	display: inline-block;
 	width: 60px;
 	height: 34px;
+}
+
+.tooltip {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	height: 34px;
+	margin-right: 10px;
+}
+
+.tooltip-icon {
+	width: 20px;
+	height: 20px;
+	display: block;
+}
+
+.tooltip-text {
+	position: absolute;
+	left: -1050%;
+	top: 250%;
+	/* transform: translateX(-100%); */
+	text-align: left;
+	width: 16rem;
+	padding: 6px 10px;
+	border-radius: 6px;
+	background: rgba(27, 26, 26, 0.95);
+	color: orange;
+	font-size: 20px;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	z-index: 10;
+	transition: opacity 0.1s ease, visibility 0.1s ease;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus-within .tooltip-text {
+	opacity: 1;
+	visibility: visible;
 }
 
 .switch input {

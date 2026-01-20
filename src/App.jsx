@@ -345,6 +345,7 @@ function App() {
         handleLanguageChange={handleLanguageChange}
         handleSpeedMode={handleSpeedMode}
         speedMode={speedMode}
+		language={settings.language}
       />
       <div id="board-and-keyboard">
         <div className="board-container">

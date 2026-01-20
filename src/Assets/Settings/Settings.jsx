@@ -173,7 +173,51 @@ export const ALPHABET_ARRAYS = {
   es: CAPITAL_LETTERS_ES,
 };
 
-function resultScreen(language, isOver, targetWord, history, onPlayAgain, tileTags) {
+export function infoScreen(language, infoIcon) {
+  if (language === "tr") {
+    return (
+      <div className="tooltip">
+        <img className="tooltip-icon" src={infoIcon} alt="Info" />
+        <div className="tooltip-text">
+          <p>
+            <strong>Zamana karşı:</strong>
+          </p>
+          <p>Her tahmin için 30 saniye süreniz var.</p>
+          <p>
+            Eğer 30 saniye içinde geçerli bir kelime girmezseniz, sizin için,
+            önceki tahminlerinizi de dikkate alarak, rastgele bir kelime
+            seçilecek.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="tooltip">
+      <img className="tooltip-icon" src={infoIcon} alt="Info" />
+      <div className="tooltip-text">
+        <p>
+          <strong>Time mode:</strong>
+        </p>
+        <p>You get 30 seconds per guess.</p>
+        <p>
+          If you don't enter a valid word in 30 seconds, a random word will be
+          generated and submitted for you, using only the letters that aren't
+          ruled out by your previous guesses.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function resultScreen(
+  language,
+  isOver,
+  targetWord,
+  history,
+  onPlayAgain,
+  tileTags
+) {
   let modalContent = null;
   if (language === "tr") {
     modalContent = (
@@ -184,8 +228,14 @@ function resultScreen(language, isOver, targetWord, history, onPlayAgain, tileTa
           <strong>{targetWord}</strong> idi.
         </p>
         <p>
-          Şu ana kadarki skorunuz: <strong>{history[0].won}/{history[0].played}</strong><br/>Seri:{" "}
-          <strong>{history[0].streak}</strong><br/>En uzun seri: <strong>{history[0].longestStreak}</strong>
+          Şu ana kadarki skorunuz:{" "}
+          <strong>
+            {history[0].won}/{history[0].played}
+          </strong>
+          <br />
+          Seri: <strong>{history[0].streak}</strong>
+          <br />
+          En uzun seri: <strong>{history[0].longestStreak}</strong>
         </p>
         <button className="play-again-button" onClick={onPlayAgain}>
           YENİDEN OYNA
@@ -201,13 +251,19 @@ function resultScreen(language, isOver, targetWord, history, onPlayAgain, tileTa
           <strong>{targetWord}</strong>
         </p>
         <p>
-          your score so far: <strong>{history[0].won}/{history[0].played}</strong><br/>streak:{" "}
-          <strong>{history[0].streak}</strong><br/>longest streak: <strong>{history[0].longestStreak}</strong>
+          your score so far:{" "}
+          <strong>
+            {history[0].won}/{history[0].played}
+          </strong>
+          <br />
+          streak: <strong>{history[0].streak}</strong>
+          <br />
+          longest streak: <strong>{history[0].longestStreak}</strong>
         </p>
         <button className="play-again-button" onClick={onPlayAgain}>
           Play again
         </button>
-		<Share tileTags={tileTags}>SHARE</Share>
+        <Share tileTags={tileTags}>SHARE</Share>
       </div>
     );
   }
