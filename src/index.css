@@ -342,7 +342,7 @@ body.bg-flash-red {
 .tooltip-text {
 	position: fixed;
 	left: 50%;
-	top: 36%;
+	top: min(36%, 260px);
 	text-align: left;
 	width: min(16rem, calc(100vw - 40px));
 	max-width: calc(100vw - 40px);
